@@ -2,14 +2,11 @@ import { defineRelations } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 
-export const relations = defineRelations(schema, (r) => ({
+export const relations = defineRelations(schema, (relations) => ({
 	households: {
-		members: r.many.householdMembers(),
-	},
-	householdMembers: {
-		household: r.one.households({
-			from: r.householdMembers.householdId,
-			to: r.households.id,
+		organization: relations.one.organization({
+			from: relations.households.organizationId,
+			to: relations.organization.id,
 		}),
 	},
 }));

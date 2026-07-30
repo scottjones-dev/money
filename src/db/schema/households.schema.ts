@@ -3,6 +3,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 
@@ -15,7 +16,6 @@ export const households = pgTable(
 
 		organizationId: text("organization_id")
 			.notNull()
-			.unique()
 			.references(() => organization.id, {
 				onDelete: "cascade",
 			}),
@@ -23,25 +23,33 @@ export const households = pgTable(
 		name: text("name").notNull(),
 
 		currency: text("currency").notNull().default("GBP"),
+
 		country: text("country").notNull().default("GB"),
 
 		postcodeArea: text("postcode_area"),
 
 		createdAt: timestamp("created_at", {
 			withTimezone: true,
+			mode: "date",
 		})
 			.notNull()
 			.defaultNow(),
 
 		updatedAt: timestamp("updated_at", {
 			withTimezone: true,
+			mode: "date",
 		})
 			.notNull()
 			.defaultNow(),
 	},
 	(table) => [
-		index("households_organization_id_idx").on(
+		uniqueIndex("households_organization_id_unique").on(
 			table.organizationId,
 		),
+
+		index("households_created_at_idx").on(table.createdAt),
 	],
 );
+
+export type Household = typeof households.$inferSelect;
+export type NewHousehold = typeof households.$inferInsert;

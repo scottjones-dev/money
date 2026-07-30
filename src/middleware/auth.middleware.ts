@@ -1,4 +1,3 @@
-// src/middleware/auth.middleware.ts
 import { createMiddleware } from "hono/factory";
 
 import { auth } from "@/lib/auth";
@@ -13,22 +12,15 @@ export const sessionMiddleware =
 		if (!authSession) {
 			context.set("user", null);
 			context.set("session", null);
+			context.set("household", null);
 
 			await next();
 			return;
 		}
 
-		context.set("user", {
-			id: authSession.user.id,
-			email: authSession.user.email,
-			name: authSession.user.name,
-		});
-
-		context.set("session", {
-			id: authSession.session.id,
-			userId: authSession.session.userId,
-			expiresAt: authSession.session.expiresAt,
-		});
+		context.set("user", authSession.user);
+		context.set("session", authSession.session);
+		context.set("household", null);
 
 		await next();
 	});

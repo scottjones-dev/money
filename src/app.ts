@@ -1,32 +1,33 @@
-// src/app.ts
 import { auth } from "@/lib/auth";
 import configureOpenAPI from "@/lib/configure-open-api";
 import createApp from "@/lib/create-app";
-import {
-	requireAuthMiddleware,
-	sessionMiddleware,
-} from "@/middleware/auth.middleware";
+import { sessionMiddleware } from "@/middleware/auth.middleware";
 
 import health from "@/modules/health/health.index";
+import households from "@/modules/households/households.index";
 
 const app = createApp();
 
 configureOpenAPI(app);
 
-app.on(["GET", "POST"], "/v1/auth/**", (context) => {
-	return auth.handler(context.req.raw);
-});
+/*
+ * Better Auth must be mounted using the raw request handler.
+ */
+app.on(
+	["GET", "POST"],
+	"/v1/auth/**",
+	(context) => auth.handler(context.req.raw),
+);
 
+/*
+ * Resolve Better Auth session information for API resources.
+ * Better Auth's own routes are already registered above.
+ */
 app.use("/v1/*", sessionMiddleware);
 
-app.get("/v1/me", requireAuthMiddleware, (context) => {
-	return context.json({
-		user: context.get("user"),
-		session: context.get("session"),
-	});
-});
-
-const routes = app.route("/health", health);
+const routes = app
+	.route("/health", health)
+	.route("/v1/households", households);
 
 export type AppType = typeof routes;
 

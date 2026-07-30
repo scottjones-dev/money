@@ -6,23 +6,29 @@ import type {
 } from "@hono/zod-openapi";
 import type { Logger } from "pino";
 
-export interface AuthenticatedUser {
-	id: string;
-	email: string;
-	name: string;
-}
+import type { auth } from "@/lib/auth";
 
-export interface AuthenticatedSession {
+export type AuthenticatedUser =
+	typeof auth.$Infer.Session.user;
+
+export type AuthenticatedSession =
+	typeof auth.$Infer.Session.session;
+
+export interface HouseholdContext {
 	id: string;
-	userId: string;
-	expiresAt: Date;
+	organizationId: string;
+	name: string;
+	role: string;
 }
 
 export interface AppVariables {
 	requestId: string;
 	logger: Logger;
+
 	user: AuthenticatedUser | null;
 	session: AuthenticatedSession | null;
+
+	household: HouseholdContext | null;
 }
 
 export interface AppBindings {
