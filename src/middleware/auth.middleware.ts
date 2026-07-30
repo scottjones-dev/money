@@ -3,8 +3,8 @@ import { createMiddleware } from "hono/factory";
 import { auth } from "@/lib/auth";
 import type { AppBindings } from "@/types/app";
 
-export const sessionMiddleware =
-	createMiddleware<AppBindings>(async (context, next) => {
+export const sessionMiddleware = createMiddleware<AppBindings>(
+	async (context, next) => {
 		const authSession = await auth.api.getSession({
 			headers: context.req.raw.headers,
 		});
@@ -23,10 +23,11 @@ export const sessionMiddleware =
 		context.set("household", null);
 
 		await next();
-	});
+	},
+);
 
-export const requireAuthMiddleware =
-	createMiddleware<AppBindings>(async (context, next) => {
+export const requireAuthMiddleware = createMiddleware<AppBindings>(
+	async (context, next) => {
 		const user = context.get("user");
 
 		if (!user) {
@@ -43,4 +44,5 @@ export const requireAuthMiddleware =
 		}
 
 		await next();
-	});
+	},
+);

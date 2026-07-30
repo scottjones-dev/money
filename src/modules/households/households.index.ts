@@ -16,19 +16,10 @@ const router = createRouter();
 
 router.use("*", requireAuthMiddleware);
 
-router.openapi(
-	createHouseholdRoute,
-	createHouseholdHandler,
-);
+router.openapi(createHouseholdRoute, createHouseholdHandler);
 
-router.openapi(
-	listHouseholdsRoute,
-	listHouseholdsHandler,
-);
+router.openapi(listHouseholdsRoute, listHouseholdsHandler);
 
-router.openapi(
-	getHouseholdRoute,
-	getHouseholdHandler,
-);
+router.openapi(getHouseholdRoute, getHouseholdHandler);
 
 export default router;

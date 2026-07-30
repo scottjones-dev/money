@@ -1,11 +1,8 @@
 import { z } from "@hono/zod-openapi";
 
-export const householdRoleSchema = z
-	.string()
-	.min(1)
-	.openapi({
-		example: "owner",
-	});
+export const householdRoleSchema = z.string().min(1).openapi({
+	example: "owner",
+});
 
 export const householdSchema = z
 	.object({
@@ -31,14 +28,9 @@ export const householdSchema = z
 
 export const createHouseholdSchema = z
 	.object({
-		name: z
-			.string()
-			.trim()
-			.min(1)
-			.max(100)
-			.openapi({
-				example: "Jones Household",
-			}),
+		name: z.string().trim().min(1).max(100).openapi({
+			example: "Jones Household",
+		}),
 
 		postcodeArea: z
 			.string()
@@ -70,11 +62,7 @@ export const errorResponseSchema = z
 		}),
 	})
 	.openapi("ErrorResponse");
-    
-export type CreateHouseholdInput = z.infer<
-	typeof createHouseholdSchema
->;
 
-export type HouseholdResponse = z.infer<
-	typeof householdSchema
->;
+export type CreateHouseholdInput = z.infer<typeof createHouseholdSchema>;
+
+export type HouseholdResponse = z.infer<typeof householdSchema>;

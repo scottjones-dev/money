@@ -29,4 +29,4 @@ lerna-debug.log*
 
 dist
 coverage
-drizzle
+src/db/migration/

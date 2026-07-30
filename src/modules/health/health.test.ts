@@ -13,9 +13,7 @@ vi.mock("./health.repository", () => ({
 	},
 }));
 
-const mockedCheckDatabase = vi.mocked(
-	healthRepository.checkDatabase,
-);
+const mockedCheckDatabase = vi.mocked(healthRepository.checkDatabase);
 
 function createTestApp() {
 	const app = createRouter();

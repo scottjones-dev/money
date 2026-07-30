@@ -6,6 +6,7 @@ import { defaultHook } from "stoker/openapi";
 
 import { logger } from "@/lib/logger";
 import { requestIdMiddleware } from "@/middleware/request-id.middleware";
+import { AppError } from "@/shared/errors/app-error";
 import type { AppBindings, AppOpenAPI } from "@/types/app";
 
 export function createRouter(): AppOpenAPI {
@@ -24,19 +25,8 @@ export default function createApp(): AppOpenAPI {
 		"*",
 		cors({
 			origin: (origin) => origin,
-			allowHeaders: [
-				"Content-Type",
-				"Authorization",
-				"X-Request-ID",
-			],
-			allowMethods: [
-				"GET",
-				"POST",
-				"PUT",
-				"PATCH",
-				"DELETE",
-				"OPTIONS",
-			],
+			allowHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
+			allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 			exposeHeaders: ["X-Request-ID"],
 			credentials: true,
 			maxAge: 600,
@@ -85,6 +75,30 @@ export default function createApp(): AppOpenAPI {
 	});
 
 	app.onError((error, context) => {
+		const requestId = context.get("requestId") ?? crypto.randomUUID();
+
+		if (error instanceof AppError) {
+			context.get("logger")?.warn(
+				{
+					code: error.code,
+					statusCode: error.statusCode,
+					details: error.details,
+				},
+				error.message,
+			);
+
+			return context.json(
+				{
+					error: {
+						code: error.code,
+						message: error.message,
+						requestId,
+					},
+				},
+				error.statusCode as 400 | 401 | 403 | 404 | 409 | 422,
+			);
+		}
+
 		context.get("logger")?.error(
 			{
 				error,
@@ -97,8 +111,7 @@ export default function createApp(): AppOpenAPI {
 				error: {
 					code: "INTERNAL_SERVER_ERROR",
 					message: "An unexpected error occurred.",
-					requestId:
-						context.get("requestId") ?? crypto.randomUUID(),
+					requestId,
 				},
 			},
 			500,

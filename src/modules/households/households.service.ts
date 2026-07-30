@@ -1,10 +1,9 @@
 import { auth } from "@/lib/auth";
-
+import { householdsRepository } from "./households.repository";
 import type {
 	CreateHouseholdInput,
 	HouseholdResponse,
 } from "./households.schemas";
-import { householdsRepository } from "./households.repository";
 
 function createOrganizationSlug(name: string): string {
 	const base = name
@@ -59,9 +58,7 @@ export const householdsService = {
 		});
 
 		if (!organization) {
-			throw new Error(
-				"Better Auth did not return the created organization.",
-			);
+			throw new Error("Better Auth did not return the created organization.");
 		}
 
 		try {
@@ -98,8 +95,7 @@ export const householdsService = {
 	},
 
 	async list(userId: string): Promise<HouseholdResponse[]> {
-		const households =
-			await householdsRepository.findAllForUser(userId);
+		const households = await householdsRepository.findAllForUser(userId);
 
 		return households.map(mapHouseholdResponse);
 	},
@@ -108,8 +104,7 @@ export const householdsService = {
 		userId: string;
 		householdId: string;
 	}): Promise<HouseholdResponse | null> {
-		const household =
-			await householdsRepository.findForUser(input);
+		const household = await householdsRepository.findForUser(input);
 
 		if (!household) {
 			return null;

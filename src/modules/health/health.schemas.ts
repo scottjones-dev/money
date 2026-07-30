@@ -21,6 +21,4 @@ export const healthResponseSchema = z
 	})
 	.openapi("HealthResponse");
 
-export type HealthResponse = z.infer<
-	typeof healthResponseSchema
->;
+export type HealthResponse = z.infer<typeof healthResponseSchema>;

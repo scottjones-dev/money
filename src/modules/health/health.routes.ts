@@ -9,8 +9,7 @@ export const healthRoute = createRoute({
 	path: "/",
 	tags: ["Health"],
 	summary: "Check API health",
-	description:
-		"Checks the API process and PostgreSQL database connection.",
+	description: "Checks the API process and PostgreSQL database connection.",
 	responses: {
 		200: jsonContent(
 			healthResponseSchema,

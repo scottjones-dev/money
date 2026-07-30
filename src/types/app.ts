@@ -14,11 +14,17 @@ export type AuthenticatedUser =
 export type AuthenticatedSession =
 	typeof auth.$Infer.Session.session;
 
+export type HouseholdRole =
+	| "owner"
+	| "admin"
+	| "member"
+	| "viewer";
+
 export interface HouseholdContext {
 	id: string;
 	organizationId: string;
 	name: string;
-	role: string;
+	role: HouseholdRole;
 }
 
 export interface AppVariables {

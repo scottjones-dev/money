@@ -1,10 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 
 import { member } from "@/db/schema/auth.schema";
-import {
-	households,
-	type NewHousehold,
-} from "@/db/schema/households.schema";
+import { households, type NewHousehold } from "@/db/schema/households.schema";
 import { db } from "@/lib/database";
 
 export interface CreateHouseholdRecordInput {
@@ -31,9 +28,7 @@ export const householdsRepository = {
 		return household;
 	},
 
-	async deleteByOrganizationId(
-		organizationId: string,
-	): Promise<void> {
+	async deleteByOrganizationId(organizationId: string): Promise<void> {
 		await db
 			.delete(households)
 			.where(eq(households.organizationId, organizationId));
@@ -55,19 +50,13 @@ export const householdsRepository = {
 			.from(member)
 			.innerJoin(
 				households,
-				eq(
-					member.organizationId,
-					households.organizationId,
-				),
+				eq(member.organizationId, households.organizationId),
 			)
 			.where(eq(member.userId, userId))
 			.orderBy(desc(households.createdAt));
 	},
 
-	async findForUser(input: {
-		userId: string;
-		householdId: string;
-	}) {
+	async findForUser(input: { userId: string; householdId: string }) {
 		const [household] = await db
 			.select({
 				id: households.id,
@@ -81,13 +70,7 @@ export const householdsRepository = {
 				updatedAt: households.updatedAt,
 			})
 			.from(households)
-			.innerJoin(
-				member,
-				eq(
-					member.organizationId,
-					households.organizationId,
-				),
-			)
+			.innerJoin(member, eq(member.organizationId, households.organizationId))
 			.where(
 				and(
 					eq(households.id, input.householdId),
@@ -99,10 +82,7 @@ export const householdsRepository = {
 		return household ?? null;
 	},
 
-	async findMembership(input: {
-		userId: string;
-		householdId: string;
-	}) {
+	async findMembership(input: { userId: string; householdId: string }) {
 		const [result] = await db
 			.select({
 				id: households.id,
@@ -111,13 +91,7 @@ export const householdsRepository = {
 				role: member.role,
 			})
 			.from(households)
-			.innerJoin(
-				member,
-				eq(
-					member.organizationId,
-					households.organizationId,
-				),
-			)
+			.innerJoin(member, eq(member.organizationId, households.organizationId))
 			.where(
 				and(
 					eq(households.id, input.householdId),

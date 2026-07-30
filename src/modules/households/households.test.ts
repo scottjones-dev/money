@@ -22,17 +22,11 @@ vi.mock("./households.service", () => ({
 	},
 }));
 
-const mockedCreate = vi.mocked(
-	householdsService.create,
-);
+const mockedCreate = vi.mocked(householdsService.create);
 
-const mockedList = vi.mocked(
-	householdsService.list,
-);
+const mockedList = vi.mocked(householdsService.list);
 
-const mockedGet = vi.mocked(
-	householdsService.get,
-);
+const mockedGet = vi.mocked(householdsService.get);
 
 const exampleHousehold = {
 	id: "074f1038-70b1-467e-b5c6-72d14c8fa659",
@@ -70,9 +64,7 @@ function createAuthenticatedTestApp() {
 			id: "session_123",
 			userId: "user_123",
 			token: "session-token",
-			expiresAt: new Date(
-				Date.now() + 60_000,
-			),
+			expiresAt: new Date(Date.now() + 60_000),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			ipAddress: null,
@@ -84,20 +76,11 @@ function createAuthenticatedTestApp() {
 		await next();
 	});
 
-	app.openapi(
-		createHouseholdRoute,
-		createHouseholdHandler,
-	);
+	app.openapi(createHouseholdRoute, createHouseholdHandler);
 
-	app.openapi(
-		listHouseholdsRoute,
-		listHouseholdsHandler,
-	);
+	app.openapi(listHouseholdsRoute, listHouseholdsHandler);
 
-	app.openapi(
-		getHouseholdRoute,
-		getHouseholdHandler,
-	);
+	app.openapi(getHouseholdRoute, getHouseholdHandler);
 
 	return app;
 }
@@ -108,9 +91,7 @@ describe("household routes", () => {
 	});
 
 	it("creates a household", async () => {
-		mockedCreate.mockResolvedValue(
-			exampleHousehold,
-		);
+		mockedCreate.mockResolvedValue(exampleHousehold);
 
 		const app = createAuthenticatedTestApp();
 
@@ -143,9 +124,7 @@ describe("household routes", () => {
 	});
 
 	it("lists accessible households", async () => {
-		mockedList.mockResolvedValue([
-			exampleHousehold,
-		]);
+		mockedList.mockResolvedValue([exampleHousehold]);
 
 		const app = createAuthenticatedTestApp();
 
@@ -155,30 +134,20 @@ describe("household routes", () => {
 
 		const body = await response.json();
 
-		expect(body).toEqual([
-			exampleHousehold,
-		]);
+		expect(body).toEqual([exampleHousehold]);
 
-		expect(mockedList).toHaveBeenCalledWith(
-			"user_123",
-		);
+		expect(mockedList).toHaveBeenCalledWith("user_123");
 	});
 
 	it("returns a household", async () => {
-		mockedGet.mockResolvedValue(
-			exampleHousehold,
-		);
+		mockedGet.mockResolvedValue(exampleHousehold);
 
 		const app = createAuthenticatedTestApp();
 
-		const response = await app.request(
-			`/${exampleHousehold.id}`,
-		);
+		const response = await app.request(`/${exampleHousehold.id}`);
 
 		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual(
-			exampleHousehold,
-		);
+		expect(await response.json()).toEqual(exampleHousehold);
 	});
 
 	it("returns 404 for an inaccessible household", async () => {
@@ -186,17 +155,14 @@ describe("household routes", () => {
 
 		const app = createAuthenticatedTestApp();
 
-		const response = await app.request(
-			"/074f1038-70b1-467e-b5c6-72d14c8fa659",
-		);
+		const response = await app.request("/074f1038-70b1-467e-b5c6-72d14c8fa659");
 
 		expect(response.status).toBe(404);
 
 		expect(await response.json()).toEqual({
 			error: {
 				code: "HOUSEHOLD_NOT_FOUND",
-				message:
-					"The household could not be found.",
+				message: "The household could not be found.",
 				requestId: "test-request-id",
 			},
 		});
@@ -205,9 +171,7 @@ describe("household routes", () => {
 	it("rejects an invalid household UUID", async () => {
 		const app = createAuthenticatedTestApp();
 
-		const response = await app.request(
-			"/not-a-valid-uuid",
-		);
+		const response = await app.request("/not-a-valid-uuid");
 
 		expect(response.status).toBe(422);
 	});

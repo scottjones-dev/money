@@ -43,9 +43,7 @@ export const households = pgTable(
 			.defaultNow(),
 	},
 	(table) => [
-		uniqueIndex("households_organization_id_unique").on(
-			table.organizationId,
-		),
+		uniqueIndex("households_organization_id_unique").on(table.organizationId),
 
 		index("households_created_at_idx").on(table.createdAt),
 	],
