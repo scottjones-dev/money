@@ -301,7 +301,10 @@ export const incomeSourcesService = {
 
 		await getRequiredIncomeSource(input);
 
-		const deleted = await incomeSourcesRepository.delete(input);
+		const deleted = await incomeSourcesRepository.delete({
+			householdId: input.householdId,
+			incomeSourceId: input.incomeSourceId,
+		});
 
 		if (!deleted) {
 			throw new AppError({

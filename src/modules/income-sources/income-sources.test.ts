@@ -35,6 +35,7 @@ vi.mock("@/modules/income-sources/income-sources.repository", () => ({
 	},
 }));
 
+import { errorHandler } from "@/middleware/error.middleware";
 import incomeSourcesRouter from "./income-sources.index";
 
 const householdId = "11111111-1111-4111-8111-111111111111";
@@ -124,6 +125,8 @@ function createTestApp(input?: { authenticated?: boolean }) {
 	});
 
 	app.route("/v1/households/:householdId/income-sources", incomeSourcesRouter);
+
+	app.onError(errorHandler);
 
 	return app;
 }

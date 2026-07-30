@@ -4,7 +4,7 @@ import { z } from "@hono/zod-openapi";
 const moneyAmountSchema = z
 	.string()
 	.trim()
-	.regex(/^\d{1,12}(?:\.\d{1,2})?$/, {
+	.regex(/^-?\d{1,12}(?:\.\d{1,2})?$/, {
 		message:
 			"Amount must be a positive monetary value with no more than two decimal places.",
 	})
