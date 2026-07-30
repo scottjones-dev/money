@@ -55,8 +55,7 @@ export class AppError extends Error {
 		this.code = options.code;
 		this.statusCode = options.statusCode;
 		this.details = options.details;
-		this.expose =
-			options.expose ?? options.statusCode < 500;
+		this.expose = options.expose ?? options.statusCode < 500;
 
 		Object.setPrototypeOf(this, new.target.prototype);
 	}

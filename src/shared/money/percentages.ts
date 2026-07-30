@@ -4,15 +4,11 @@ import { roundToPence } from "./rounding";
 
 export type PercentageValue = Decimal.Value;
 
-export function percentageToRate(
-	percentage: PercentageValue,
-): Decimal {
+export function percentageToRate(percentage: PercentageValue): Decimal {
 	return new Decimal(percentage).dividedBy(100);
 }
 
-export function rateToPercentage(
-	rate: PercentageValue,
-): Decimal {
+export function rateToPercentage(rate: PercentageValue): Decimal {
 	return new Decimal(rate).times(100);
 }
 
@@ -20,36 +16,28 @@ export function calculatePercentage(
 	amount: Decimal.Value,
 	percentage: PercentageValue,
 ): Decimal {
-	return new Decimal(amount).times(
-		percentageToRate(percentage),
-	);
+	return new Decimal(amount).times(percentageToRate(percentage));
 }
 
 export function calculatePercentageRounded(
 	amount: Decimal.Value,
 	percentage: PercentageValue,
 ): Decimal {
-	return roundToPence(
-		calculatePercentage(amount, percentage),
-	);
+	return roundToPence(calculatePercentage(amount, percentage));
 }
 
 export function increaseByPercentage(
 	amount: Decimal.Value,
 	percentage: PercentageValue,
 ): Decimal {
-	return new Decimal(amount).plus(
-		calculatePercentage(amount, percentage),
-	);
+	return new Decimal(amount).plus(calculatePercentage(amount, percentage));
 }
 
 export function decreaseByPercentage(
 	amount: Decimal.Value,
 	percentage: PercentageValue,
 ): Decimal {
-	return new Decimal(amount).minus(
-		calculatePercentage(amount, percentage),
-	);
+	return new Decimal(amount).minus(calculatePercentage(amount, percentage));
 }
 
 export function percentageDifference(
@@ -59,15 +47,10 @@ export function percentageDifference(
 	const original = new Decimal(originalAmount);
 
 	if (original.isZero()) {
-		throw new RangeError(
-			"Cannot calculate a percentage difference from zero.",
-		);
+		throw new RangeError("Cannot calculate a percentage difference from zero.");
 	}
 
-	return new Decimal(newAmount)
-		.minus(original)
-		.dividedBy(original)
-		.times(100);
+	return new Decimal(newAmount).minus(original).dividedBy(original).times(100);
 }
 
 export function percentageOf(
@@ -77,14 +60,10 @@ export function percentageOf(
 	const totalDecimal = new Decimal(total);
 
 	if (totalDecimal.isZero()) {
-		throw new RangeError(
-			"Cannot calculate a percentage of zero.",
-		);
+		throw new RangeError("Cannot calculate a percentage of zero.");
 	}
 
-	return new Decimal(part)
-		.dividedBy(totalDecimal)
-		.times(100);
+	return new Decimal(part).dividedBy(totalDecimal).times(100);
 }
 
 export function clampPercentage(
@@ -93,15 +72,10 @@ export function clampPercentage(
 	maximum = 100,
 ): Decimal {
 	if (minimum > maximum) {
-		throw new RangeError(
-			"minimum cannot be greater than maximum.",
-		);
+		throw new RangeError("minimum cannot be greater than maximum.");
 	}
 
-	return Decimal.max(
-		minimum,
-		Decimal.min(maximum, new Decimal(percentage)),
-	);
+	return Decimal.max(minimum, Decimal.min(maximum, new Decimal(percentage)));
 }
 
 export function assertValidPercentage(

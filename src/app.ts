@@ -19,15 +19,10 @@ configureOpenAPI(app);
  * Better Auth routes are limited by IP because the user will often not
  * have an authenticated session yet.
  */
-app.use(
-	"/v1/auth/*",
-	authenticationRateLimitMiddleware,
-);
+app.use("/v1/auth/*", authenticationRateLimitMiddleware);
 
-app.on(
-	["GET", "POST"],
-	"/v1/auth/**",
-	(context) => auth.handler(context.req.raw),
+app.on(["GET", "POST"], "/v1/auth/**", (context) =>
+	auth.handler(context.req.raw),
 );
 
 /*
@@ -40,10 +35,7 @@ app.use("/v1/*", generalRateLimitMiddleware);
 const routes = app
 	.route("/health", health)
 	.route("/v1/households", households)
-	.route(
-		"/v1/households/:householdId/members",
-		members,
-	);
+	.route("/v1/households/:householdId/members", members);
 
 export type AppType = typeof routes;
 

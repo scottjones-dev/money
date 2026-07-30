@@ -3,23 +3,15 @@ import type { ErrorHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 
 import {
-	AppError,
-	isAppError,
+	type AppError,
 	type AppErrorStatus,
+	isAppError,
 } from "@/shared/errors/app-error";
 import { ERROR_CODES } from "@/shared/errors/error-codes";
 import type { AppBindings } from "@/types/app";
 
 const SAFE_HTTP_STATUSES = new Set<AppErrorStatus>([
-	400,
-	401,
-	403,
-	404,
-	409,
-	422,
-	429,
-	500,
-	503,
+	400, 401, 403, 404, 409, 422, 429, 500, 503,
 ]);
 
 function resolveRequestId(
@@ -53,23 +45,16 @@ function logApplicationError(
 	logger?.warn(payload, error.message);
 }
 
-function createAppErrorResponse(
-	error: AppError,
-	requestId: string,
-) {
+function createAppErrorResponse(error: AppError, requestId: string) {
 	return {
 		error: {
 			code: error.code,
-			message: error.expose
-				? error.message
-				: "An unexpected error occurred.",
+			message: error.expose ? error.message : "An unexpected error occurred.",
 			requestId,
 			...(error.expose && error.details
 				? {
 						details: error.details.map((detail) => ({
-							...(detail.field
-								? { field: detail.field }
-								: {}),
+							...(detail.field ? { field: detail.field } : {}),
 							message: detail.message,
 						})),
 					}
@@ -78,25 +63,17 @@ function createAppErrorResponse(
 	};
 }
 
-export const errorHandler: ErrorHandler<AppBindings> = (
-	error,
-	context,
-) => {
+export const errorHandler: ErrorHandler<AppBindings> = (error, context) => {
 	const requestId = resolveRequestId(context);
 
 	if (isAppError(error)) {
 		logApplicationError(error, context, requestId);
 
-		const statusCode = SAFE_HTTP_STATUSES.has(
-			error.statusCode,
-		)
+		const statusCode = SAFE_HTTP_STATUSES.has(error.statusCode)
 			? error.statusCode
 			: 500;
 
-		return context.json(
-			createAppErrorResponse(error, requestId),
-			statusCode,
-		);
+		return context.json(createAppErrorResponse(error, requestId), statusCode);
 	}
 
 	if (error instanceof HTTPException) {

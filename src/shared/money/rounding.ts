@@ -8,9 +8,7 @@ export type MoneyRoundingMode =
 	| "floor"
 	| "ceil";
 
-function resolveRoundingMode(
-	mode: MoneyRoundingMode,
-): Decimal.Rounding {
+function resolveRoundingMode(mode: MoneyRoundingMode): Decimal.Rounding {
 	switch (mode) {
 		case "half_up":
 			return Decimal.ROUND_HALF_UP;
@@ -38,9 +36,7 @@ export function roundDecimal(
 	mode: MoneyRoundingMode = "half_up",
 ): Decimal {
 	if (!Number.isInteger(decimalPlaces) || decimalPlaces < 0) {
-		throw new RangeError(
-			"decimalPlaces must be a non-negative integer.",
-		);
+		throw new RangeError("decimalPlaces must be a non-negative integer.");
 	}
 
 	return new Decimal(value).toDecimalPlaces(
@@ -63,20 +59,14 @@ export function roundToPounds(
 	return roundDecimal(value, 0, mode);
 }
 
-export function truncateToPence(
-	value: Decimal.Value,
-): Decimal {
+export function truncateToPence(value: Decimal.Value): Decimal {
 	return roundToPence(value, "down");
 }
 
-export function floorToPounds(
-	value: Decimal.Value,
-): Decimal {
+export function floorToPounds(value: Decimal.Value): Decimal {
 	return roundToPounds(value, "floor");
 }
 
-export function ceilToPounds(
-	value: Decimal.Value,
-): Decimal {
+export function ceilToPounds(value: Decimal.Value): Decimal {
 	return roundToPounds(value, "ceil");
 }

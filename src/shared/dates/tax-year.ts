@@ -37,9 +37,7 @@ export function parseCalendarDate(value: string): Date {
 	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 
 	if (!match) {
-		throw new RangeError(
-			"Date must use the YYYY-MM-DD format.",
-		);
+		throw new RangeError("Date must use the YYYY-MM-DD format.");
 	}
 
 	const year = Number(match[1]);
@@ -100,9 +98,7 @@ export function createTaxYear(startYear: number): TaxYear {
  * Dates from 1 January to 5 April belong to the tax year that began
  * in the previous calendar year.
  */
-export function getTaxYearForDate(
-	input: Date | string,
-): TaxYear {
+export function getTaxYearForDate(input: Date | string): TaxYear {
 	const date =
 		typeof input === "string"
 			? parseCalendarDate(input)
@@ -118,19 +114,14 @@ export function getTaxYearForDate(
 
 	const isOnOrAfterTaxYearStart =
 		month > TAX_YEAR_START_MONTH_INDEX ||
-		(month === TAX_YEAR_START_MONTH_INDEX &&
-			day >= TAX_YEAR_START_DAY);
+		(month === TAX_YEAR_START_MONTH_INDEX && day >= TAX_YEAR_START_DAY);
 
-	const startYear = isOnOrAfterTaxYearStart
-		? calendarYear
-		: calendarYear - 1;
+	const startYear = isOnOrAfterTaxYearStart ? calendarYear : calendarYear - 1;
 
 	return createTaxYear(startYear);
 }
 
-export function getCurrentTaxYear(
-	now: Date = new Date(),
-): TaxYear {
+export function getCurrentTaxYear(now: Date = new Date()): TaxYear {
 	return getTaxYearForDate(now);
 }
 
@@ -140,10 +131,7 @@ export function isDateInTaxYear(
 ): boolean {
 	const taxYear = createTaxYear(taxYearStartYear);
 
-	const date =
-		typeof input === "string"
-			? parseCalendarDate(input)
-			: input;
+	const date = typeof input === "string" ? parseCalendarDate(input) : input;
 
 	if (Number.isNaN(date.getTime())) {
 		return false;
@@ -156,9 +144,7 @@ export function isDateInTaxYear(
 }
 
 export function parseTaxYearLabel(label: string): TaxYear {
-	const match = /^(\d{4})-(\d{2}|\d{4})$/.exec(
-		label.trim(),
-	);
+	const match = /^(\d{4})-(\d{2}|\d{4})$/.exec(label.trim());
 
 	if (!match) {
 		throw new RangeError(
@@ -173,9 +159,7 @@ export function parseTaxYearLabel(label: string): TaxYear {
 
 	const suppliedEndYear =
 		suppliedEndPart.length === 2
-			? Number(
-					`${String(expectedEndYear).slice(0, 2)}${suppliedEndPart}`,
-				)
+			? Number(`${String(expectedEndYear).slice(0, 2)}${suppliedEndPart}`)
 			: Number(suppliedEndPart);
 
 	if (suppliedEndYear !== expectedEndYear) {
@@ -187,9 +171,6 @@ export function parseTaxYearLabel(label: string): TaxYear {
 	return createTaxYear(startYear);
 }
 
-export function compareTaxYears(
-	left: TaxYear,
-	right: TaxYear,
-): number {
+export function compareTaxYears(left: TaxYear, right: TaxYear): number {
 	return left.startYear - right.startYear;
 }

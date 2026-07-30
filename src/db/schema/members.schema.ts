@@ -92,7 +92,8 @@ export const householdMembers = pgTable(
 			mode: "date",
 		})
 			.notNull()
-			.defaultNow(),
+			.defaultNow()
+			.$onUpdate(() => new Date()),
 	},
 	(table) => [
 		index("household_members_household_id_idx").on(table.householdId),

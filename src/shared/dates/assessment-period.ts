@@ -1,8 +1,5 @@
 // src/shared/dates/assessment-period.ts
-import {
-	formatCalendarDate,
-	parseCalendarDate,
-} from "./tax-year";
+import { formatCalendarDate, parseCalendarDate } from "./tax-year";
 
 export interface AssessmentPeriod {
 	startDate: string;
@@ -39,19 +36,12 @@ function assertValidAssessmentPeriodDay(day: number): void {
 
 function assertValidPeriodIndex(index: number): void {
 	if (!Number.isInteger(index)) {
-		throw new RangeError(
-			"Assessment-period index must be an integer.",
-		);
+		throw new RangeError("Assessment-period index must be an integer.");
 	}
 }
 
-function daysInUtcMonth(
-	year: number,
-	monthIndex: number,
-): number {
-	return new Date(
-		Date.UTC(year, monthIndex + 1, 0),
-	).getUTCDate();
+function daysInUtcMonth(year: number, monthIndex: number): number {
+	return new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
 }
 
 /**
@@ -69,24 +59,15 @@ function createClampedUtcDate(
 ): Date {
 	assertValidAssessmentPeriodDay(day);
 
-	const normalised = new Date(
-		Date.UTC(year, monthIndex, 1),
-	);
+	const normalised = new Date(Date.UTC(year, monthIndex, 1));
 
 	const normalisedYear = normalised.getUTCFullYear();
 	const normalisedMonth = normalised.getUTCMonth();
 
-	const finalDay = daysInUtcMonth(
-		normalisedYear,
-		normalisedMonth,
-	);
+	const finalDay = daysInUtcMonth(normalisedYear, normalisedMonth);
 
 	return new Date(
-		Date.UTC(
-			normalisedYear,
-			normalisedMonth,
-			Math.min(day, finalDay),
-		),
+		Date.UTC(normalisedYear, normalisedMonth, Math.min(day, finalDay)),
 	);
 }
 
@@ -112,10 +93,7 @@ function addUtcMonthsAnchored(
 	);
 }
 
-function compareCalendarDates(
-	left: Date,
-	right: Date,
-): number {
+function compareCalendarDates(left: Date, right: Date): number {
 	return left.getTime() - right.getTime();
 }
 
@@ -125,23 +103,13 @@ export function createAssessmentPeriod(input: {
 }): AssessmentPeriod {
 	assertValidPeriodIndex(input.index);
 
-	const firstStart = parseCalendarDate(
-		input.firstPeriodStartDate,
-	);
+	const firstStart = parseCalendarDate(input.firstPeriodStartDate);
 
 	const startDay = firstStart.getUTCDate();
 
-	const start = addUtcMonthsAnchored(
-		firstStart,
-		input.index,
-		startDay,
-	);
+	const start = addUtcMonthsAnchored(firstStart, input.index, startDay);
 
-	const nextStart = addUtcMonthsAnchored(
-		firstStart,
-		input.index + 1,
-		startDay,
-	);
+	const nextStart = addUtcMonthsAnchored(firstStart, input.index + 1, startDay);
 
 	const end = addUtcDays(nextStart, -1);
 	const expectedPaymentDate = addUtcDays(end, 7);
@@ -149,9 +117,7 @@ export function createAssessmentPeriod(input: {
 	return {
 		startDate: formatCalendarDate(start),
 		endDate: formatCalendarDate(end),
-		expectedPaymentDate: formatCalendarDate(
-			expectedPaymentDate,
-		),
+		expectedPaymentDate: formatCalendarDate(expectedPaymentDate),
 		startDay,
 		index: input.index,
 	};
@@ -164,9 +130,7 @@ export function getAssessmentPeriodForDate(input: {
 	firstPeriodStartDate: string;
 	date: string;
 }): AssessmentPeriod {
-	const firstStart = parseCalendarDate(
-		input.firstPeriodStartDate,
-	);
+	const firstStart = parseCalendarDate(input.firstPeriodStartDate);
 	const target = parseCalendarDate(input.date);
 
 	if (target < firstStart) {
@@ -176,9 +140,7 @@ export function getAssessmentPeriodForDate(input: {
 	}
 
 	const estimatedIndex =
-		(target.getUTCFullYear() -
-			firstStart.getUTCFullYear()) *
-			12 +
+		(target.getUTCFullYear() - firstStart.getUTCFullYear()) * 12 +
 		target.getUTCMonth() -
 		firstStart.getUTCMonth();
 
@@ -188,10 +150,7 @@ export function getAssessmentPeriodForDate(input: {
 		index,
 	});
 
-	while (
-		target <
-		parseCalendarDate(period.startDate)
-	) {
+	while (target < parseCalendarDate(period.startDate)) {
 		index -= 1;
 
 		period = createAssessmentPeriod({
@@ -200,10 +159,7 @@ export function getAssessmentPeriodForDate(input: {
 		});
 	}
 
-	while (
-		target >
-		parseCalendarDate(period.endDate)
-	) {
+	while (target > parseCalendarDate(period.endDate)) {
 		index += 1;
 
 		period = createAssessmentPeriod({
@@ -230,9 +186,7 @@ export function getPreviousAssessmentPeriod(
 	firstPeriodStartDate: string,
 ): AssessmentPeriod {
 	if (period.index <= 0) {
-		throw new RangeError(
-			"The first assessment period has no previous period.",
-		);
+		throw new RangeError("The first assessment period has no previous period.");
 	}
 
 	return createAssessmentPeriod({
@@ -262,10 +216,7 @@ export function getAssessmentPeriodLengthInDays(
 	const end = parseCalendarDate(period.endDate);
 
 	return (
-		Math.floor(
-			(end.getTime() - start.getTime()) /
-				MILLISECONDS_PER_DAY,
-		) + 1
+		Math.floor((end.getTime() - start.getTime()) / MILLISECONDS_PER_DAY) + 1
 	);
 }
 
@@ -284,13 +235,10 @@ export function listAssessmentPeriods(input: {
 		);
 	}
 
-	return Array.from(
-		{ length: input.count },
-		(_, offset) =>
-			createAssessmentPeriod({
-				firstPeriodStartDate:
-					input.firstPeriodStartDate,
-				index: fromIndex + offset,
-			}),
+	return Array.from({ length: input.count }, (_, offset) =>
+		createAssessmentPeriod({
+			firstPeriodStartDate: input.firstPeriodStartDate,
+			index: fromIndex + offset,
+		}),
 	);
 }

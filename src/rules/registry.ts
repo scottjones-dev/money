@@ -1,10 +1,8 @@
 // src/rules/registry.ts
+
+import { createTaxYear, type TaxYear } from "@/shared/dates/tax-year";
 import { AppError } from "@/shared/errors/app-error";
 import { ERROR_CODES } from "@/shared/errors/error-codes";
-import {
-	createTaxYear,
-	type TaxYear,
-} from "@/shared/dates/tax-year";
 
 import { nationalInsuranceRules2025To2026 } from "./national-insurance/2025-26";
 import { nationalInsuranceRules2026To2027 } from "./national-insurance/2026-27";
@@ -21,8 +19,7 @@ export const taxJurisdictions = [
 	"northern_ireland",
 ] as const;
 
-export type TaxJurisdiction =
-	(typeof taxJurisdictions)[number];
+export type TaxJurisdiction = (typeof taxJurisdictions)[number];
 
 export interface IncomeTaxBand {
 	name: string;
@@ -95,9 +92,7 @@ export interface NationalInsuranceRuleSet {
 	};
 }
 
-export interface RegisteredRuleSet<
-	TRules,
-> {
+export interface RegisteredRuleSet<TRules> {
 	taxYear: TaxYear;
 	rules: TRules;
 }
@@ -107,14 +102,9 @@ const incomeTaxRegistry = new Map<
 	Map<TaxJurisdiction, IncomeTaxRuleSet>
 >();
 
-const nationalInsuranceRegistry = new Map<
-	string,
-	NationalInsuranceRuleSet
->();
+const nationalInsuranceRegistry = new Map<string, NationalInsuranceRuleSet>();
 
-function normaliseTaxYearKey(
-	taxYear: TaxYear | string | number,
-): string {
+function normaliseTaxYearKey(taxYear: TaxYear | string | number): string {
 	if (typeof taxYear === "number") {
 		return createTaxYear(taxYear).label;
 	}
@@ -126,19 +116,12 @@ function normaliseTaxYearKey(
 	return taxYear.label;
 }
 
-function registerIncomeTaxRules(
-	rules: IncomeTaxRuleSet,
-): void {
-	let jurisdictionRules = incomeTaxRegistry.get(
-		rules.taxYear,
-	);
+function registerIncomeTaxRules(rules: IncomeTaxRuleSet): void {
+	let jurisdictionRules = incomeTaxRegistry.get(rules.taxYear);
 
 	if (!jurisdictionRules) {
 		jurisdictionRules = new Map();
-		incomeTaxRegistry.set(
-			rules.taxYear,
-			jurisdictionRules,
-		);
+		incomeTaxRegistry.set(rules.taxYear, jurisdictionRules);
 	}
 
 	for (const jurisdiction of rules.jurisdictions) {
@@ -152,59 +135,37 @@ function registerIncomeTaxRules(
 	}
 }
 
-function registerNationalInsuranceRules(
-	rules: NationalInsuranceRuleSet,
-): void {
+function registerNationalInsuranceRules(rules: NationalInsuranceRuleSet): void {
 	if (nationalInsuranceRegistry.has(rules.taxYear)) {
 		throw new Error(
 			`National Insurance rules are already registered for ${rules.taxYear}.`,
 		);
 	}
 
-	nationalInsuranceRegistry.set(
-		rules.taxYear,
-		rules,
-	);
+	nationalInsuranceRegistry.set(rules.taxYear, rules);
 }
 
-registerIncomeTaxRules(
-	incomeTaxRules2025To2026EnglandWalesNorthernIreland,
-);
+registerIncomeTaxRules(incomeTaxRules2025To2026EnglandWalesNorthernIreland);
 
-registerIncomeTaxRules(
-	incomeTaxRules2025To2026Scotland,
-);
+registerIncomeTaxRules(incomeTaxRules2025To2026Scotland);
 
-registerIncomeTaxRules(
-	incomeTaxRules2026To2027EnglandWalesNorthernIreland,
-);
+registerIncomeTaxRules(incomeTaxRules2026To2027EnglandWalesNorthernIreland);
 
-registerIncomeTaxRules(
-	incomeTaxRules2026To2027Scotland,
-);
+registerIncomeTaxRules(incomeTaxRules2026To2027Scotland);
 
-registerNationalInsuranceRules(
-	nationalInsuranceRules2025To2026,
-);
+registerNationalInsuranceRules(nationalInsuranceRules2025To2026);
 
-registerNationalInsuranceRules(
-	nationalInsuranceRules2026To2027,
-);
+registerNationalInsuranceRules(nationalInsuranceRules2026To2027);
 
 export function getIncomeTaxRules(input: {
 	taxYear: TaxYear | string | number;
 	jurisdiction: TaxJurisdiction;
 }): IncomeTaxRuleSet {
-	const taxYear = normaliseTaxYearKey(
-		input.taxYear,
-	);
+	const taxYear = normaliseTaxYearKey(input.taxYear);
 
-	const taxYearRules =
-		incomeTaxRegistry.get(taxYear);
+	const taxYearRules = incomeTaxRegistry.get(taxYear);
 
-	const rules = taxYearRules?.get(
-		input.jurisdiction,
-	);
+	const rules = taxYearRules?.get(input.jurisdiction);
 
 	if (!rules) {
 		throw new AppError({
@@ -216,14 +177,12 @@ export function getIncomeTaxRules(input: {
 			details: [
 				{
 					field: "taxYear",
-					message:
-						`No income-tax rule set is registered for ${taxYear}.`,
+					message: `No income-tax rule set is registered for ${taxYear}.`,
 					value: taxYear,
 				},
 				{
 					field: "jurisdiction",
-					message:
-						`No income-tax rule set is registered for ${input.jurisdiction}.`,
+					message: `No income-tax rule set is registered for ${input.jurisdiction}.`,
 					value: input.jurisdiction,
 				},
 			],
@@ -236,24 +195,19 @@ export function getIncomeTaxRules(input: {
 export function getNationalInsuranceRules(
 	taxYearInput: TaxYear | string | number,
 ): NationalInsuranceRuleSet {
-	const taxYear = normaliseTaxYearKey(
-		taxYearInput,
-	);
+	const taxYear = normaliseTaxYearKey(taxYearInput);
 
-	const rules =
-		nationalInsuranceRegistry.get(taxYear);
+	const rules = nationalInsuranceRegistry.get(taxYear);
 
 	if (!rules) {
 		throw new AppError({
 			code: ERROR_CODES.UNSUPPORTED_TAX_YEAR,
-			message:
-				`National Insurance rules are not available for ${taxYear}.`,
+			message: `National Insurance rules are not available for ${taxYear}.`,
 			statusCode: 422,
 			details: [
 				{
 					field: "taxYear",
-					message:
-						`No National Insurance rule set is registered for ${taxYear}.`,
+					message: `No National Insurance rule set is registered for ${taxYear}.`,
 					value: taxYear,
 				},
 			],
@@ -267,23 +221,15 @@ export function hasIncomeTaxRules(input: {
 	taxYear: TaxYear | string | number;
 	jurisdiction: TaxJurisdiction;
 }): boolean {
-	const taxYear = normaliseTaxYearKey(
-		input.taxYear,
-	);
+	const taxYear = normaliseTaxYearKey(input.taxYear);
 
-	return (
-		incomeTaxRegistry
-			.get(taxYear)
-			?.has(input.jurisdiction) ?? false
-	);
+	return incomeTaxRegistry.get(taxYear)?.has(input.jurisdiction) ?? false;
 }
 
 export function hasNationalInsuranceRules(
 	taxYearInput: TaxYear | string | number,
 ): boolean {
-	return nationalInsuranceRegistry.has(
-		normaliseTaxYearKey(taxYearInput),
-	);
+	return nationalInsuranceRegistry.has(normaliseTaxYearKey(taxYearInput));
 }
 
 export function listRegisteredIncomeTaxRules(): Array<{
@@ -295,10 +241,7 @@ export function listRegisteredIncomeTaxRules(): Array<{
 		jurisdiction: TaxJurisdiction;
 	}> = [];
 
-	for (const [
-		taxYear,
-		jurisdictionRules,
-	] of incomeTaxRegistry) {
+	for (const [taxYear, jurisdictionRules] of incomeTaxRegistry) {
 		for (const jurisdiction of jurisdictionRules.keys()) {
 			registered.push({
 				taxYear,
@@ -308,16 +251,13 @@ export function listRegisteredIncomeTaxRules(): Array<{
 	}
 
 	return registered.sort((left, right) => {
-		const yearComparison =
-			left.taxYear.localeCompare(right.taxYear);
+		const yearComparison = left.taxYear.localeCompare(right.taxYear);
 
 		if (yearComparison !== 0) {
 			return yearComparison;
 		}
 
-		return left.jurisdiction.localeCompare(
-			right.jurisdiction,
-		);
+		return left.jurisdiction.localeCompare(right.jurisdiction);
 	});
 }
 
@@ -326,11 +266,7 @@ export function listRegisteredNationalInsuranceRules(): string[] {
 }
 
 export function resolveTaxJurisdiction(
-	country:
-		| "england"
-		| "wales"
-		| "scotland"
-		| "northern_ireland",
+	country: "england" | "wales" | "scotland" | "northern_ireland",
 ): TaxJurisdiction {
 	return country;
 }

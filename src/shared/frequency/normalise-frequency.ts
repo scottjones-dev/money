@@ -14,13 +14,9 @@ export const paymentFrequencies = [
 	"one_off",
 ] as const;
 
-export type PaymentFrequency =
-	(typeof paymentFrequencies)[number];
+export type PaymentFrequency = (typeof paymentFrequencies)[number];
 
-export type NormalisedFrequency =
-	| "weekly"
-	| "monthly"
-	| "yearly";
+export type NormalisedFrequency = "weekly" | "monthly" | "yearly";
 
 const WEEKS_PER_YEAR = new Decimal(52);
 const FORTNIGHTS_PER_YEAR = new Decimal(26);
@@ -90,9 +86,7 @@ export function normaliseDecimalToMonthly(
 	amount: Decimal.Value,
 	frequency: PaymentFrequency,
 ): Decimal {
-	return normaliseDecimalToYearly(amount, frequency).dividedBy(
-		MONTHS_PER_YEAR,
-	);
+	return normaliseDecimalToYearly(amount, frequency).dividedBy(MONTHS_PER_YEAR);
 }
 
 /**
@@ -102,9 +96,7 @@ export function normaliseDecimalToWeekly(
 	amount: Decimal.Value,
 	frequency: PaymentFrequency,
 ): Decimal {
-	return normaliseDecimalToYearly(amount, frequency).dividedBy(
-		WEEKS_PER_YEAR,
-	);
+	return normaliseDecimalToYearly(amount, frequency).dividedBy(WEEKS_PER_YEAR);
 }
 
 /**
@@ -131,66 +123,42 @@ export function normaliseMoneyToWeekly(
 	amount: Money,
 	frequency: PaymentFrequency,
 ): Money {
-	return Money.from(
-		normaliseDecimalToWeekly(
-			amount.toDecimal(),
-			frequency,
-		),
-	);
+	return Money.from(normaliseDecimalToWeekly(amount.toDecimal(), frequency));
 }
 
 export function normaliseMoneyToMonthly(
 	amount: Money,
 	frequency: PaymentFrequency,
 ): Money {
-	return Money.from(
-		normaliseDecimalToMonthly(
-			amount.toDecimal(),
-			frequency,
-		),
-	);
+	return Money.from(normaliseDecimalToMonthly(amount.toDecimal(), frequency));
 }
 
 export function normaliseMoneyToYearly(
 	amount: Money,
 	frequency: PaymentFrequency,
 ): Money {
-	return Money.from(
-		normaliseDecimalToYearly(
-			amount.toDecimal(),
-			frequency,
-		),
-	);
+	return Money.from(normaliseDecimalToYearly(amount.toDecimal(), frequency));
 }
 
 export function normaliseAmountToWeekly(
 	amount: MoneyInput,
 	frequency: PaymentFrequency,
 ): Money {
-	return normaliseMoneyToWeekly(
-		Money.from(amount),
-		frequency,
-	);
+	return normaliseMoneyToWeekly(Money.from(amount), frequency);
 }
 
 export function normaliseAmountToMonthly(
 	amount: MoneyInput,
 	frequency: PaymentFrequency,
 ): Money {
-	return normaliseMoneyToMonthly(
-		Money.from(amount),
-		frequency,
-	);
+	return normaliseMoneyToMonthly(Money.from(amount), frequency);
 }
 
 export function normaliseAmountToYearly(
 	amount: MoneyInput,
 	frequency: PaymentFrequency,
 ): Money {
-	return normaliseMoneyToYearly(
-		Money.from(amount),
-		frequency,
-	);
+	return normaliseMoneyToYearly(Money.from(amount), frequency);
 }
 
 export function normaliseMoneyFrequency(
@@ -198,11 +166,5 @@ export function normaliseMoneyFrequency(
 	from: PaymentFrequency,
 	to: NormalisedFrequency,
 ): Money {
-	return Money.from(
-		convertDecimalFrequency(
-			amount.toDecimal(),
-			from,
-			to,
-		),
-	);
+	return Money.from(convertDecimalFrequency(amount.toDecimal(), from, to));
 }

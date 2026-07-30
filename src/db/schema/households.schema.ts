@@ -40,7 +40,8 @@ export const households = pgTable(
 			mode: "date",
 		})
 			.notNull()
-			.defaultNow(),
+			.defaultNow()
+			.$onUpdate(() => new Date()),
 	},
 	(table) => [
 		uniqueIndex("households_organization_id_unique").on(table.organizationId),

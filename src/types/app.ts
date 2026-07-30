@@ -1,24 +1,14 @@
 // src/types/app.ts
-import type {
-	OpenAPIHono,
-	RouteConfig,
-	RouteHandler,
-} from "@hono/zod-openapi";
+import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
 import type { Logger } from "pino";
 
 import type { auth } from "@/lib/auth";
 
-export type AuthenticatedUser =
-	typeof auth.$Infer.Session.user;
+export type AuthenticatedUser = typeof auth.$Infer.Session.user;
 
-export type AuthenticatedSession =
-	typeof auth.$Infer.Session.session;
+export type AuthenticatedSession = typeof auth.$Infer.Session.session;
 
-export type HouseholdRole =
-	| "owner"
-	| "admin"
-	| "member"
-	| "viewer";
+export type HouseholdRole = "owner" | "admin" | "member" | "viewer";
 
 export interface HouseholdContext {
 	id: string;
@@ -43,6 +33,7 @@ export interface AppBindings {
 
 export type AppOpenAPI = OpenAPIHono<AppBindings>;
 
-export type AppRouteHandler<
-	TRoute extends RouteConfig,
-> = RouteHandler<TRoute, AppBindings>;
+export type AppRouteHandler<TRoute extends RouteConfig> = RouteHandler<
+	TRoute,
+	AppBindings
+>;

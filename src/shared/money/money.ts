@@ -20,9 +20,7 @@ export class Money {
 		const decimal = new Decimal(value);
 
 		if (!decimal.isFinite()) {
-			throw new RangeError(
-				"Money amount must be a finite number.",
-			);
+			throw new RangeError("Money amount must be a finite number.");
 		}
 
 		this.value = roundToPence(decimal);

@@ -13,49 +13,44 @@ import type { IncomeTaxRuleSet } from "@/rules/registry";
  * Savings, dividends and other specialised income types should use
  * separate rule sets.
  */
-export const incomeTaxRules2026To2027EnglandWalesNorthernIreland =
-	{
-		taxYear: "2026-27",
+export const incomeTaxRules2026To2027EnglandWalesNorthernIreland = {
+	taxYear: "2026-27",
 
-		jurisdictions: [
-			"england",
-			"wales",
-			"northern_ireland",
-		],
+	jurisdictions: ["england", "wales", "northern_ireland"],
 
-		personalAllowance: "12570.00",
+	personalAllowance: "12570.00",
 
-		/**
-		 * The Personal Allowance starts reducing once adjusted net
-		 * income exceeds £100,000.
-		 */
-		personalAllowanceTaperThreshold: "100000.00",
+	/**
+	 * The Personal Allowance starts reducing once adjusted net
+	 * income exceeds £100,000.
+	 */
+	personalAllowanceTaperThreshold: "100000.00",
 
-		/**
-		 * £1 of allowance is removed for every £2 above the threshold.
-		 *
-		 * Expressed as 50%.
-		 */
-		personalAllowanceTaperRate: "50",
+	/**
+	 * £1 of allowance is removed for every £2 above the threshold.
+	 *
+	 * Expressed as 50%.
+	 */
+	personalAllowanceTaperRate: "50",
 
-		bands: [
-			{
-				name: "basic",
-				from: "0.00",
-				to: "37700.00",
-				rate: "20",
-			},
-			{
-				name: "higher",
-				from: "37700.00",
-				to: "125140.00",
-				rate: "40",
-			},
-			{
-				name: "additional",
-				from: "125140.00",
-				to: null,
-				rate: "45",
-			},
-		],
-	} satisfies IncomeTaxRuleSet;
+	bands: [
+		{
+			name: "basic",
+			from: "0.00",
+			to: "37700.00",
+			rate: "20",
+		},
+		{
+			name: "higher",
+			from: "37700.00",
+			to: "125140.00",
+			rate: "40",
+		},
+		{
+			name: "additional",
+			from: "125140.00",
+			to: null,
+			rate: "45",
+		},
+	],
+} satisfies IncomeTaxRuleSet;

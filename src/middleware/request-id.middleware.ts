@@ -17,9 +17,7 @@ function resolveRequestId(value: string | undefined): string {
 
 export const requestIdMiddleware = createMiddleware<AppBindings>(
 	async (context, next) => {
-		const requestId = resolveRequestId(
-			context.req.header("x-request-id"),
-		);
+		const requestId = resolveRequestId(context.req.header("x-request-id"));
 
 		context.set("requestId", requestId);
 		context.header("x-request-id", requestId);

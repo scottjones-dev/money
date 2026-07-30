@@ -19,9 +19,7 @@ function decodeEncryptionKey(value: string): Buffer {
 	const key = Buffer.from(value, "base64");
 
 	if (key.length !== KEY_LENGTH_BYTES) {
-		throw new Error(
-			"ENCRYPTION_KEY must be a Base64-encoded 32-byte key.",
-		);
+		throw new Error("ENCRYPTION_KEY must be a Base64-encoded 32-byte key.");
 	}
 
 	return key;
@@ -37,17 +35,11 @@ export interface EncryptedValue {
 }
 
 function encodeEncryptedValue(value: EncryptedValue): string {
-	return [
-		value.version,
-		value.iv,
-		value.authTag,
-		value.ciphertext,
-	].join(".");
+	return [value.version, value.iv, value.authTag, value.ciphertext].join(".");
 }
 
 function decodeEncryptedValue(value: string): EncryptedValue {
-	const [version, iv, authTag, ciphertext, ...extra] =
-		value.split(".");
+	const [version, iv, authTag, ciphertext, ...extra] = value.split(".");
 
 	if (
 		version !== ENCRYPTED_VALUE_VERSION ||
@@ -67,9 +59,7 @@ function decodeEncryptedValue(value: string): EncryptedValue {
 	}
 
 	if (authTagBuffer.length !== AUTH_TAG_LENGTH_BYTES) {
-		throw new Error(
-			"Encrypted value contains an invalid authentication tag.",
-		);
+		throw new Error("Encrypted value contains an invalid authentication tag.");
 	}
 
 	return {
@@ -90,14 +80,9 @@ function decodeEncryptedValue(value: string): EncryptedValue {
 export function encryptString(plaintext: string): string {
 	const iv = randomBytes(IV_LENGTH_BYTES);
 
-	const cipher = createCipheriv(
-		ALGORITHM,
-		encryptionKey,
-		iv,
-		{
-			authTagLength: AUTH_TAG_LENGTH_BYTES,
-		},
-	);
+	const cipher = createCipheriv(ALGORITHM, encryptionKey, iv, {
+		authTagLength: AUTH_TAG_LENGTH_BYTES,
+	});
 
 	const ciphertext = Buffer.concat([
 		cipher.update(plaintext, "utf8"),
@@ -132,14 +117,10 @@ export function decryptString(encryptedValue: string): string {
 		},
 	);
 
-	decipher.setAuthTag(
-		Buffer.from(decoded.authTag, "base64url"),
-	);
+	decipher.setAuthTag(Buffer.from(decoded.authTag, "base64url"));
 
 	const plaintext = Buffer.concat([
-		decipher.update(
-			Buffer.from(decoded.ciphertext, "base64url"),
-		),
+		decipher.update(Buffer.from(decoded.ciphertext, "base64url")),
 		decipher.final(),
 	]);
 
@@ -156,12 +137,9 @@ export function decryptJson<T>(encryptedValue: string): T {
 	try {
 		return JSON.parse(plaintext) as T;
 	} catch (error) {
-		throw new Error(
-			"Decrypted value does not contain valid JSON.",
-			{
-				cause: error,
-			},
-		);
+		throw new Error("Decrypted value does not contain valid JSON.", {
+			cause: error,
+		});
 	}
 }
 
@@ -180,17 +158,11 @@ export function createSearchHash(value: string): string {
 /**
  * Compares two hexadecimal hashes without leaking comparison timing.
  */
-export function compareSearchHashes(
-	left: string,
-	right: string,
-): boolean {
+export function compareSearchHashes(left: string, right: string): boolean {
 	const leftBuffer = Buffer.from(left, "hex");
 	const rightBuffer = Buffer.from(right, "hex");
 
-	if (
-		leftBuffer.length === 0 ||
-		leftBuffer.length !== rightBuffer.length
-	) {
+	if (leftBuffer.length === 0 || leftBuffer.length !== rightBuffer.length) {
 		return false;
 	}
 

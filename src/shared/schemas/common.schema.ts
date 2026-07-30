@@ -66,17 +66,14 @@ export const ukPostcodeAreaSchema = z
 			"The outward postcode area or district, without the inward code.",
 	});
 
-export const nullableUkPostcodeAreaSchema =
-	ukPostcodeAreaSchema.nullable();
+export const nullableUkPostcodeAreaSchema = ukPostcodeAreaSchema.nullable();
 
 export const nonEmptyStringSchema = z.string().trim().min(1);
 
-export const resourceNameSchema = nonEmptyStringSchema
-	.max(100)
-	.openapi({
-		example: "Jones Household",
-		description: "A human-readable resource name.",
-	});
+export const resourceNameSchema = nonEmptyStringSchema.max(100).openapi({
+	example: "Jones Household",
+	description: "A human-readable resource name.",
+});
 
 export const sortDirectionSchema = z
 	.enum(["asc", "desc"])
@@ -88,8 +85,7 @@ export const sortDirectionSchema = z
 
 export const requestIdSchema = z.string().min(1).openapi({
 	example: "6bc9c4cc-c1be-4a7f-a2fd-f5a4991bb9ca",
-	description:
-		"A request identifier used for tracing and support.",
+	description: "A request identifier used for tracing and support.",
 });
 
 export const errorDetailSchema = z
@@ -139,14 +135,8 @@ export const timestampsSchema = z.object({
 	updatedAt: updatedAtSchema,
 });
 
-export type ErrorResponse = z.infer<
-	typeof errorResponseSchema
->;
+export type ErrorResponse = z.infer<typeof errorResponseSchema>;
 
-export type ErrorDetail = z.infer<
-	typeof errorDetailSchema
->;
+export type ErrorDetail = z.infer<typeof errorDetailSchema>;
 
-export type SortDirection = z.infer<
-	typeof sortDirectionSchema
->;
+export type SortDirection = z.infer<typeof sortDirectionSchema>;

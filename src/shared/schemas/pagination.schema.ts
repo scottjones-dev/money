@@ -54,9 +54,10 @@ export const paginationMetaSchema = z
 	})
 	.openapi("PaginationMeta");
 
-export function createPaginatedResponseSchema<
-	TItemSchema extends z.ZodType,
->(itemSchema: TItemSchema, name: string) {
+export function createPaginatedResponseSchema<TItemSchema extends z.ZodType>(
+	itemSchema: TItemSchema,
+	name: string,
+) {
 	return z
 		.object({
 			data: z.array(itemSchema),
@@ -65,17 +66,11 @@ export function createPaginatedResponseSchema<
 		.openapi(name);
 }
 
-export type PaginationQuery = z.infer<
-	typeof paginationQuerySchema
->;
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
 
-export type PaginationMeta = z.infer<
-	typeof paginationMetaSchema
->;
+export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
 
-export function getPaginationOffset(
-	pagination: PaginationQuery,
-): number {
+export function getPaginationOffset(pagination: PaginationQuery): number {
 	return (pagination.page - 1) * pagination.pageSize;
 }
 
@@ -85,9 +80,7 @@ export function createPaginationMeta(input: {
 	totalItems: number;
 }): PaginationMeta {
 	const totalPages =
-		input.totalItems === 0
-			? 0
-			: Math.ceil(input.totalItems / input.pageSize);
+		input.totalItems === 0 ? 0 : Math.ceil(input.totalItems / input.pageSize);
 
 	return {
 		page: input.page,
@@ -95,7 +88,6 @@ export function createPaginationMeta(input: {
 		totalItems: input.totalItems,
 		totalPages,
 		hasPreviousPage: input.page > 1,
-		hasNextPage:
-			totalPages > 0 && input.page < totalPages,
+		hasNextPage: totalPages > 0 && input.page < totalPages,
 	};
 }

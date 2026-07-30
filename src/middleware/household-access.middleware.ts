@@ -4,11 +4,7 @@ import { createMiddleware } from "hono/factory";
 import { householdsRepository } from "@/modules/households/households.repository";
 import { ERROR_CODES } from "@/shared/errors/error-codes";
 import { uuidSchema } from "@/shared/schemas/common.schema";
-import type {
-	AppBindings,
-	HouseholdContext,
-	HouseholdRole,
-} from "@/types/app";
+import type { AppBindings, HouseholdContext, HouseholdRole } from "@/types/app";
 
 const HOUSEHOLD_ROLES = new Set<HouseholdRole>([
 	"owner",
@@ -21,8 +17,8 @@ function isHouseholdRole(value: string): value is HouseholdRole {
 	return HOUSEHOLD_ROLES.has(value as HouseholdRole);
 }
 
-export const householdAccessMiddleware =
-	createMiddleware<AppBindings>(async (context, next) => {
+export const householdAccessMiddleware = createMiddleware<AppBindings>(
+	async (context, next) => {
 		const requestId = context.get("requestId");
 		const user = context.get("user");
 
@@ -53,8 +49,7 @@ export const householdAccessMiddleware =
 						details: [
 							{
 								field: "householdId",
-								message:
-									"The household ID must be a valid UUID.",
+								message: "The household ID must be a valid UUID.",
 							},
 						],
 					},
@@ -63,11 +58,10 @@ export const householdAccessMiddleware =
 			);
 		}
 
-		const household =
-			await householdsRepository.findMembership({
-				userId: user.id,
-				householdId: householdIdResult.data,
-			});
+		const household = await householdsRepository.findMembership({
+			userId: user.id,
+			householdId: householdIdResult.data,
+		});
 
 		/*
 		 * Return the same response for a missing household and one that the
@@ -79,8 +73,7 @@ export const householdAccessMiddleware =
 				{
 					error: {
 						code: ERROR_CODES.HOUSEHOLD_NOT_FOUND,
-						message:
-							"The household could not be found.",
+						message: "The household could not be found.",
 						requestId,
 					},
 				},
@@ -102,8 +95,7 @@ export const householdAccessMiddleware =
 				{
 					error: {
 						code: ERROR_CODES.INTERNAL_SERVER_ERROR,
-						message:
-							"An unexpected error occurred.",
+						message: "An unexpected error occurred.",
 						requestId,
 					},
 				},
@@ -121,4 +113,5 @@ export const householdAccessMiddleware =
 		context.set("household", householdContext);
 
 		await next();
-	});
+	},
+);

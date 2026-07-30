@@ -1,9 +1,7 @@
 // src/middleware/rate-limit.middleware.ts
-import {
-	RateLimiterMemory,
-	type RateLimiterRes,
-} from "rate-limiter-flexible";
+
 import { createMiddleware } from "hono/factory";
+import { RateLimiterMemory, type RateLimiterRes } from "rate-limiter-flexible";
 
 import type { AppBindings } from "@/types/app";
 
@@ -37,16 +35,12 @@ export interface RateLimitOptions {
 	 * Generates the identifier used for the rate-limit bucket.
 	 */
 	keyGenerator?: (
-		context: Parameters<
-			Parameters<typeof createMiddleware<AppBindings>>[0]
-		>[0],
+		context: Parameters<Parameters<typeof createMiddleware<AppBindings>>[0]>[0],
 	) => string;
 }
 
 function getClientIp(
-	context: Parameters<
-		Parameters<typeof createMiddleware<AppBindings>>[0]
-	>[0],
+	context: Parameters<Parameters<typeof createMiddleware<AppBindings>>[0]>[0],
 ): string {
 	/*
 	 * Only trust these proxy headers when your reverse proxy is configured
@@ -61,10 +55,7 @@ function getClientIp(
 	const forwardedFor = context.req.header("x-forwarded-for");
 
 	if (forwardedFor) {
-		const firstAddress = forwardedFor
-			.split(",")
-			.at(0)
-			?.trim();
+		const firstAddress = forwardedFor.split(",").at(0)?.trim();
 
 		if (firstAddress) {
 			return firstAddress;
@@ -81,9 +72,7 @@ function getClientIp(
 }
 
 function defaultKeyGenerator(
-	context: Parameters<
-		Parameters<typeof createMiddleware<AppBindings>>[0]
-	>[0],
+	context: Parameters<Parameters<typeof createMiddleware<AppBindings>>[0]>[0],
 ): string {
 	const user = context.get("user");
 
@@ -94,9 +83,7 @@ function defaultKeyGenerator(
 	return `ip:${getClientIp(context)}`;
 }
 
-function isRateLimiterResponse(
-	error: unknown,
-): error is RateLimiterRes {
+function isRateLimiterResponse(error: unknown): error is RateLimiterRes {
 	return (
 		typeof error === "object" &&
 		error !== null &&
@@ -105,102 +92,61 @@ function isRateLimiterResponse(
 	);
 }
 
-function secondsUntilReset(
-	msBeforeNext: number,
-): number {
+function secondsUntilReset(msBeforeNext: number): number {
 	return Math.max(1, Math.ceil(msBeforeNext / 1_000));
 }
 
-export function createRateLimitMiddleware(
-	options: RateLimitOptions,
-) {
+export function createRateLimitMiddleware(options: RateLimitOptions) {
 	const limiter = new RateLimiterMemory({
 		points: options.points,
 		duration: options.durationSeconds,
-		blockDuration:
-			options.blockDurationSeconds ?? 0,
+		blockDuration: options.blockDurationSeconds ?? 0,
 		keyPrefix: options.keyPrefix,
 	});
 
-	return createMiddleware<AppBindings>(
-		async (context, next) => {
-			const keyGenerator =
-				options.keyGenerator ?? defaultKeyGenerator;
+	return createMiddleware<AppBindings>(async (context, next) => {
+		const keyGenerator = options.keyGenerator ?? defaultKeyGenerator;
 
-			const key = keyGenerator(context);
-			const pointsToConsume =
-				options.pointsToConsume ?? 1;
+		const key = keyGenerator(context);
+		const pointsToConsume = options.pointsToConsume ?? 1;
 
-			try {
-				const result = await limiter.consume(
-					key,
-					pointsToConsume,
-				);
+		try {
+			const result = await limiter.consume(key, pointsToConsume);
 
-				const resetSeconds = secondsUntilReset(
-					result.msBeforeNext,
-				);
+			const resetSeconds = secondsUntilReset(result.msBeforeNext);
 
-				context.header(
-					"RateLimit-Limit",
-					String(options.points),
-				);
-				context.header(
-					"RateLimit-Remaining",
-					String(
-						Math.max(
-							0,
-							result.remainingPoints,
-						),
-					),
-				);
-				context.header(
-					"RateLimit-Reset",
-					String(resetSeconds),
-				);
+			context.header("RateLimit-Limit", String(options.points));
+			context.header(
+				"RateLimit-Remaining",
+				String(Math.max(0, result.remainingPoints)),
+			);
+			context.header("RateLimit-Reset", String(resetSeconds));
 
-				await next();
-			} catch (error: unknown) {
-				if (!isRateLimiterResponse(error)) {
-					throw error;
-				}
-
-				const retryAfter = secondsUntilReset(
-					error.msBeforeNext,
-				);
-
-				context.header(
-					"RateLimit-Limit",
-					String(options.points),
-				);
-				context.header(
-					"RateLimit-Remaining",
-					"0",
-				);
-				context.header(
-					"RateLimit-Reset",
-					String(retryAfter),
-				);
-				context.header(
-					"Retry-After",
-					String(retryAfter),
-				);
-
-				return context.json(
-					{
-						error: {
-							code: "RATE_LIMIT_EXCEEDED",
-							message:
-								"Too many requests. Please try again later.",
-							requestId:
-								context.get("requestId"),
-						},
-					},
-					429,
-				);
+			await next();
+		} catch (error: unknown) {
+			if (!isRateLimiterResponse(error)) {
+				throw error;
 			}
-		},
-	);
+
+			const retryAfter = secondsUntilReset(error.msBeforeNext);
+
+			context.header("RateLimit-Limit", String(options.points));
+			context.header("RateLimit-Remaining", "0");
+			context.header("RateLimit-Reset", String(retryAfter));
+			context.header("Retry-After", String(retryAfter));
+
+			return context.json(
+				{
+					error: {
+						code: "RATE_LIMIT_EXCEEDED",
+						message: "Too many requests. Please try again later.",
+						requestId: context.get("requestId"),
+					},
+				},
+				429,
+			);
+		}
+	});
 }
 
 /**
@@ -208,39 +154,35 @@ export function createRateLimitMiddleware(
  *
  * 120 requests per minute per authenticated user, falling back to IP.
  */
-export const generalRateLimitMiddleware =
-	createRateLimitMiddleware({
-		keyPrefix: "general",
-		points: 120,
-		durationSeconds: 60,
-	});
+export const generalRateLimitMiddleware = createRateLimitMiddleware({
+	keyPrefix: "general",
+	points: 120,
+	durationSeconds: 60,
+});
 
 /**
  * Stricter protection for login, registration and password-reset routes.
  *
  * 10 attempts within 15 minutes, followed by a 15-minute block.
  */
-export const authenticationRateLimitMiddleware =
-	createRateLimitMiddleware({
-		keyPrefix: "authentication",
-		points: 10,
-		durationSeconds: 15 * 60,
-		blockDurationSeconds: 15 * 60,
+export const authenticationRateLimitMiddleware = createRateLimitMiddleware({
+	keyPrefix: "authentication",
+	points: 10,
+	durationSeconds: 15 * 60,
+	blockDurationSeconds: 15 * 60,
 
-		/*
-		 * Authentication requests normally have no session yet, so use the
-		 * client IP rather than the authenticated-user fallback.
-		 */
-		keyGenerator: (context) =>
-			`ip:${getClientIp(context)}`,
-	});
+	/*
+	 * Authentication requests normally have no session yet, so use the
+	 * client IP rather than the authenticated-user fallback.
+	 */
+	keyGenerator: (context) => `ip:${getClientIp(context)}`,
+});
 
 /**
  * Protection for expensive financial calculations.
  */
-export const calculationRateLimitMiddleware =
-	createRateLimitMiddleware({
-		keyPrefix: "calculations",
-		points: 30,
-		durationSeconds: 60,
-	});
+export const calculationRateLimitMiddleware = createRateLimitMiddleware({
+	keyPrefix: "calculations",
+	points: 30,
+	durationSeconds: 60,
+});
