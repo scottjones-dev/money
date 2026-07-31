@@ -6,7 +6,9 @@ import {
 	authenticationRateLimitMiddleware,
 	generalRateLimitMiddleware,
 } from "@/middleware/rate-limit.middleware";
-
+import affordability from "@/modules/affordability/affordability.index";
+import debts from "@/modules/debts/debts.index";
+import expenses from "@/modules/expenses/expenses.index";
 import health from "@/modules/health/health.index";
 import households from "@/modules/households/households.index";
 import incomeSources from "@/modules/income-sources/income-sources.index";
@@ -37,7 +39,10 @@ const routes = app
 	.route("/health", health)
 	.route("/v1/households", households)
 	.route("/v1/households/:householdId/members", members)
-	.route("/v1/households/:householdId/income-sources", incomeSources);
+	.route("/v1/households/:householdId/income-sources", incomeSources)
+	.route("/v1/households/:householdId/expenses", expenses)
+	.route("/v1/households/:householdId/debts", debts)
+	.route("/v1/households/:householdId/affordability", affordability);
 
 export type AppType = typeof routes;
 

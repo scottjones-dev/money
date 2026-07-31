@@ -10,6 +10,7 @@ import {
 } from "./households.schemas";
 
 export const createHouseholdRoute = createRoute({
+	operationId: "createHousehold",
 	method: "post",
 	path: "/",
 	tags: ["Households"],
@@ -36,6 +37,7 @@ export const createHouseholdRoute = createRoute({
 });
 
 export const listHouseholdsRoute = createRoute({
+	oprationId: "listHouseholds",
 	method: "get",
 	path: "/",
 	tags: ["Households"],
@@ -51,6 +53,7 @@ export const listHouseholdsRoute = createRoute({
 });
 
 export const getHouseholdRoute = createRoute({
+	operationId: "getHousehold",
 	method: "get",
 	path: "/{householdId}",
 	tags: ["Households"],

@@ -13,6 +13,7 @@ import {
 } from "./members.schemas";
 
 export const createMemberRoute = createRoute({
+	operationId: "createMember",
 	method: "post",
 	path: "/",
 	tags: ["Household members"],
@@ -39,6 +40,7 @@ export const createMemberRoute = createRoute({
 });
 
 export const listMembersRoute = createRoute({
+	operationId: "listMembers",
 	method: "get",
 	path: "/",
 	tags: ["Household members"],
@@ -55,6 +57,7 @@ export const listMembersRoute = createRoute({
 });
 
 export const getMemberRoute = createRoute({
+	operationId: "getMember",
 	method: "get",
 	path: "/{memberId}",
 	tags: ["Household members"],
@@ -71,6 +74,7 @@ export const getMemberRoute = createRoute({
 });
 
 export const updateMemberRoute = createRoute({
+	operationId: "updateMember",
 	method: "patch",
 	path: "/{memberId}",
 	tags: ["Household members"],
@@ -97,6 +101,7 @@ export const updateMemberRoute = createRoute({
 });
 
 export const deleteMemberRoute = createRoute({
+	operationId: "deleteMember",
 	method: "delete",
 	path: "/{memberId}",
 	tags: ["Household members"],

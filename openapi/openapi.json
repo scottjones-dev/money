@@ -1,0 +1,4011 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Alice Systems Money API",
+    "version": "0.1.0",
+    "description": "Household finance, budgeting, debt and UK benefit calculation API."
+  },
+  "servers": [
+    {
+      "url": "https://api.alicesystems.co.uk",
+      "description": "Local development"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "uk-finance-api"
+            ]
+          },
+          "version": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "uptimeSeconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "dependencies": {
+            "type": "object",
+            "properties": {
+              "database": {
+                "$ref": "#/components/schemas/DependencyHealth"
+              }
+            },
+            "required": [
+              "database"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "timestamp",
+          "uptimeSeconds",
+          "dependencies"
+        ]
+      },
+      "DependencyHealth": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down"
+            ]
+          },
+          "latencyMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "status",
+          "latencyMs"
+        ]
+      },
+      "Household": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organizationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "GBP"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "enum": [
+              "GB"
+            ]
+          },
+          "postcodeArea": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "example": "owner"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "organizationId",
+          "name",
+          "currency",
+          "country",
+          "postcodeArea",
+          "role",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "requestId"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "CreateHousehold": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Jones Household"
+          },
+          "postcodeArea": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 10,
+            "example": "SP4"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "HouseholdList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Household"
+        }
+      },
+      "HouseholdMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "householdId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authUserId": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "memberType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "non_dependent"
+            ]
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "self",
+              "partner",
+              "child",
+              "step_child",
+              "foster_child",
+              "other_dependent",
+              "non_dependent",
+              "other"
+            ]
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "isClaimant": {
+            "type": "boolean"
+          },
+          "isPartner": {
+            "type": "boolean"
+          },
+          "isDependent": {
+            "type": "boolean"
+          },
+          "employmentStatus": {
+            "type": "string",
+            "enum": [
+              "employed",
+              "self_employed",
+              "unemployed",
+              "student",
+              "retired",
+              "not_working",
+              "unknown"
+            ]
+          },
+          "isStudent": {
+            "type": "boolean"
+          },
+          "hasDisability": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "householdId",
+          "authUserId",
+          "firstName",
+          "lastName",
+          "memberType",
+          "relationship",
+          "dateOfBirth",
+          "isClaimant",
+          "isPartner",
+          "isDependent",
+          "employmentStatus",
+          "isStudent",
+          "hasDisability",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "MembersErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "requestId"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "CreateHouseholdMember": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Scott"
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Jones"
+          },
+          "authUserId": {
+            "type": "string",
+            "minLength": 1,
+            "example": "user_123"
+          },
+          "memberType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "non_dependent"
+            ],
+            "example": "adult"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "self",
+              "partner",
+              "child",
+              "step_child",
+              "foster_child",
+              "other_dependent",
+              "non_dependent",
+              "other"
+            ],
+            "example": "self"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "example": "1995-05-10"
+          },
+          "isClaimant": {
+            "type": "boolean",
+            "default": false
+          },
+          "isPartner": {
+            "type": "boolean",
+            "default": false
+          },
+          "isDependent": {
+            "type": "boolean",
+            "default": false
+          },
+          "employmentStatus": {
+            "type": "string",
+            "enum": [
+              "employed",
+              "self_employed",
+              "unemployed",
+              "student",
+              "retired",
+              "not_working",
+              "unknown"
+            ],
+            "default": "unknown"
+          },
+          "isStudent": {
+            "type": "boolean",
+            "default": false
+          },
+          "hasDisability": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "firstName",
+          "memberType",
+          "relationship"
+        ]
+      },
+      "HouseholdMemberList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/HouseholdMember"
+        }
+      },
+      "UpdateHouseholdMember": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Scott"
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "Jones"
+          },
+          "authUserId": {
+            "type": "string",
+            "minLength": 1,
+            "example": "user_123"
+          },
+          "memberType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "non_dependent"
+            ],
+            "example": "adult"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "self",
+              "partner",
+              "child",
+              "step_child",
+              "foster_child",
+              "other_dependent",
+              "non_dependent",
+              "other"
+            ],
+            "example": "self"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "example": "1995-05-10"
+          },
+          "isClaimant": {
+            "type": "boolean",
+            "default": false
+          },
+          "isPartner": {
+            "type": "boolean",
+            "default": false
+          },
+          "isDependent": {
+            "type": "boolean",
+            "default": false
+          },
+          "employmentStatus": {
+            "type": "string",
+            "enum": [
+              "employed",
+              "self_employed",
+              "unemployed",
+              "student",
+              "retired",
+              "not_working",
+              "unknown"
+            ],
+            "default": "unknown"
+          },
+          "isStudent": {
+            "type": "boolean",
+            "default": false
+          },
+          "hasDisability": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "DeleteHouseholdMemberResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "deletedMemberId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "success",
+          "deletedMemberId"
+        ]
+      },
+      "IncomeSource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "householdId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "memberId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "employment",
+              "self_employment",
+              "state_pension",
+              "private_pension",
+              "benefit",
+              "maintenance",
+              "rental",
+              "investment",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "grossAmount": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "fortnightly",
+              "four_weekly",
+              "monthly",
+              "quarterly",
+              "half_yearly",
+              "yearly",
+              "one_off"
+            ]
+          },
+          "isTaxable": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalised": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "weekly": {
+                "type": "string"
+              },
+              "monthly": {
+                "type": "string"
+              },
+              "yearly": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "weekly",
+              "monthly",
+              "yearly"
+            ]
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "householdId",
+          "memberId",
+          "type",
+          "name",
+          "grossAmount",
+          "frequency",
+          "isTaxable",
+          "isActive",
+          "startDate",
+          "endDate",
+          "notes",
+          "normalised",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateIncomeSource": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "employment",
+              "self_employment",
+              "state_pension",
+              "private_pension",
+              "benefit",
+              "maintenance",
+              "rental",
+              "investment",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "grossAmount": {
+            "type": "string",
+            "pattern": "^-?\\d{1,12}(?:\\.\\d{1,2})?$",
+            "example": "2450.75"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "fortnightly",
+              "four_weekly",
+              "monthly",
+              "quarterly",
+              "half_yearly",
+              "yearly",
+              "one_off"
+            ]
+          },
+          "isTaxable": {
+            "type": "boolean",
+            "default": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "memberId",
+          "type",
+          "name",
+          "grossAmount",
+          "frequency"
+        ]
+      },
+      "IncomeSourceList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IncomeSource"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              },
+              "totalPages": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "page",
+              "pageSize",
+              "total",
+              "totalPages"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ]
+      },
+      "UpdateIncomeSource": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "employment",
+              "self_employment",
+              "state_pension",
+              "private_pension",
+              "benefit",
+              "maintenance",
+              "rental",
+              "investment",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "grossAmount": {
+            "type": "string",
+            "pattern": "^-?\\d{1,12}(?:\\.\\d{1,2})?$",
+            "example": "2450.75"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "fortnightly",
+              "four_weekly",
+              "monthly",
+              "quarterly",
+              "half_yearly",
+              "yearly",
+              "one_off"
+            ]
+          },
+          "isTaxable": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        }
+      },
+      "Expense": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "householdId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "memberId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "housing",
+              "council_tax",
+              "utilities",
+              "food",
+              "transport",
+              "insurance",
+              "childcare",
+              "healthcare",
+              "education",
+              "communications",
+              "subscriptions",
+              "clothing",
+              "personal_care",
+              "entertainment",
+              "pets",
+              "maintenance",
+              "family_support",
+              "savings",
+              "debt_payment",
+              "tax",
+              "other"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "essential",
+              "important",
+              "discretionary"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "fortnightly",
+              "four_weekly",
+              "monthly",
+              "quarterly",
+              "half_yearly",
+              "yearly",
+              "one_off"
+            ]
+          },
+          "paymentMethod": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "direct_debit",
+              "standing_order",
+              "bank_transfer",
+              "debit_card",
+              "credit_card",
+              "cash",
+              "salary_deduction",
+              "benefit_deduction",
+              "other",
+              null
+            ]
+          },
+          "paymentDueDay": {
+            "type": "integer",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isFixed": {
+            "type": "boolean"
+          },
+          "isHouseholdExpense": {
+            "type": "boolean"
+          },
+          "includeInBudget": {
+            "type": "boolean"
+          },
+          "payee": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalised": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "weekly": {
+                "type": "string"
+              },
+              "monthly": {
+                "type": "string"
+              },
+              "yearly": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "weekly",
+              "monthly",
+              "yearly"
+            ]
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "householdId",
+          "memberId",
+          "category",
+          "priority",
+          "name",
+          "amount",
+          "frequency",
+          "paymentMethod",
+          "paymentDueDay",
+          "startDate",
+          "endDate",
+          "isActive",
+          "isFixed",
+          "isHouseholdExpense",
+          "includeInBudget",
+          "payee",
+          "notes",
+          "normalised",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateExpense": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "housing",
+              "council_tax",
+              "utilities",
+              "food",
+              "transport",
+              "insurance",
+              "childcare",
+              "healthcare",
+              "education",
+              "communications",
+              "subscriptions",
+              "clothing",
+              "personal_care",
+              "entertainment",
+              "pets",
+              "maintenance",
+              "family_support",
+              "savings",
+              "debt_payment",
+              "tax",
+              "other"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "essential",
+              "important",
+              "discretionary"
+            ],
+            "default": "important"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^\\d{1,12}(?:\\.\\d{1,2})?$",
+            "example": "850.00"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "fortnightly",
+              "four_weekly",
+              "monthly",
+              "quarterly",
+              "half_yearly",
+              "yearly",
+              "one_off"
+            ]
+          },
+          "paymentMethod": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "direct_debit",
+              "standing_order",
+              "bank_transfer",
+              "debit_card",
+              "credit_card",
+              "cash",
+              "salary_deduction",
+              "benefit_deduction",
+              "other",
+              null
+            ]
+          },
+          "paymentDueDay": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 31
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          },
+          "isFixed": {
+            "type": "boolean",
+            "default": false
+          },
+          "isHouseholdExpense": {
+            "type": "boolean",
+            "default": true
+          },
+          "includeInBudget": {
+            "type": "boolean",
+            "default": true
+          },
+          "payee": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "category",
+          "name",
+          "amount",
+          "frequency"
+        ]
+      },
+      "ExpenseList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Expense"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              },
+              "totalPages": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "page",
+              "pageSize",
+              "total",
+              "totalPages"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ]
+      },
+      "UpdateExpense": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "housing",
+              "council_tax",
+              "utilities",
+              "food",
+              "transport",
+              "insurance",
+              "childcare",
+              "healthcare",
+              "education",
+              "communications",
+              "subscriptions",
+              "clothing",
+              "personal_care",
+              "entertainment",
+              "pets",
+              "maintenance",
+              "family_support",
+              "savings",
+              "debt_payment",
+              "tax",
+              "other"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "essential",
+              "important",
+              "discretionary"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^\\d{1,12}(?:\\.\\d{1,2})?$",
+            "example": "850.00"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "fortnightly",
+              "four_weekly",
+              "monthly",
+              "quarterly",
+              "half_yearly",
+              "yearly",
+              "one_off"
+            ]
+          },
+          "paymentMethod": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "direct_debit",
+              "standing_order",
+              "bank_transfer",
+              "debit_card",
+              "credit_card",
+              "cash",
+              "salary_deduction",
+              "benefit_deduction",
+              "other",
+              null
+            ]
+          },
+          "paymentDueDay": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 31
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isFixed": {
+            "type": "boolean"
+          },
+          "isHouseholdExpense": {
+            "type": "boolean"
+          },
+          "includeInBudget": {
+            "type": "boolean"
+          },
+          "payee": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        }
+      },
+      "AffordabilityAssessment": {
+        "type": "object",
+        "properties": {
+          "householdId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rating": {
+            "type": "string",
+            "enum": [
+              "comfortable",
+              "manageable",
+              "stretched",
+              "unaffordable"
+            ]
+          },
+          "isAffordable": {
+            "type": "boolean"
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "netMonthlyIncome": {
+                "type": "string"
+              },
+              "benefitIncome": {
+                "type": "string"
+              },
+              "otherIncome": {
+                "type": "string"
+              },
+              "totalMonthlyIncome": {
+                "type": "string"
+              },
+              "essentialExpenses": {
+                "type": "string"
+              },
+              "importantExpenses": {
+                "type": "string"
+              },
+              "discretionaryExpenses": {
+                "type": "string"
+              },
+              "debtPayments": {
+                "type": "string"
+              },
+              "housingCosts": {
+                "type": "string"
+              },
+              "totalMonthlyExpenses": {
+                "type": "string"
+              },
+              "currentDisposableIncome": {
+                "type": "string"
+              },
+              "projectedDisposableIncome": {
+                "type": "string"
+              },
+              "requiredMonthlyBuffer": {
+                "type": "string"
+              },
+              "availableAfterBuffer": {
+                "type": "string"
+              },
+              "proposedMonthlyCommitment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "netMonthlyIncome",
+              "benefitIncome",
+              "otherIncome",
+              "totalMonthlyIncome",
+              "essentialExpenses",
+              "importantExpenses",
+              "discretionaryExpenses",
+              "debtPayments",
+              "housingCosts",
+              "totalMonthlyExpenses",
+              "currentDisposableIncome",
+              "projectedDisposableIncome",
+              "requiredMonthlyBuffer",
+              "availableAfterBuffer",
+              "proposedMonthlyCommitment"
+            ]
+          },
+          "ratios": {
+            "type": "object",
+            "properties": {
+              "housingCostPercentage": {
+                "type": "string"
+              },
+              "debtToIncomePercentage": {
+                "type": "string"
+              },
+              "essentialCostPercentage": {
+                "type": "string"
+              },
+              "totalExpensePercentage": {
+                "type": "string"
+              },
+              "disposableIncomePercentage": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "housingCostPercentage",
+              "debtToIncomePercentage",
+              "essentialCostPercentage",
+              "totalExpensePercentage",
+              "disposableIncomePercentage"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "calculatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "householdId",
+          "rating",
+          "isAffordable",
+          "totals",
+          "ratios",
+          "reasons",
+          "calculatedAt"
+        ]
+      },
+      "CalculateAffordabilityRequest": {
+        "type": "object",
+        "properties": {
+          "proposedMonthlyCommitment": {
+            "type": "string",
+            "pattern": "^\\d{1,12}(?:\\.\\d{1,2})?$",
+            "default": "0.00",
+            "example": "250.00"
+          },
+          "requiredMonthlyBuffer": {
+            "type": "string",
+            "pattern": "^\\d{1,12}(?:\\.\\d{1,2})?$",
+            "default": "100.00",
+            "example": "250.00"
+          },
+          "maximumDebtToIncomePercentage": {
+            "type": "string",
+            "pattern": "^\\d{1,3}(?:\\.\\d{1,2})?$",
+            "default": "40.00",
+            "example": "40.00"
+          }
+        }
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "oprationId": "health",
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check API health",
+        "description": "Checks the API process and PostgreSQL database connection.",
+        "responses": {
+          "200": {
+            "description": "The service and its dependencies are healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "One or more dependencies are unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households": {
+      "post": {
+        "operationId": "createHousehold",
+        "tags": [
+          "Households"
+        ],
+        "summary": "Create a household",
+        "description": "Creates a Better Auth organization and its linked finance household.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHousehold"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Household created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Household"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "oprationId": "listHouseholds",
+        "tags": [
+          "Households"
+        ],
+        "summary": "List accessible households",
+        "responses": {
+          "200": {
+            "description": "Households accessible to the current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}": {
+      "get": {
+        "operationId": "getHousehold",
+        "tags": [
+          "Households"
+        ],
+        "summary": "Get a household",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested household",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Household"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/members": {
+      "post": {
+        "operationId": "createMember",
+        "tags": [
+          "Household members"
+        ],
+        "summary": "Create a financial household member",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHouseholdMember"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Household member created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdMember"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient household permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Household member conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listMembers",
+        "tags": [
+          "Household members"
+        ],
+        "summary": "List financial household members",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdMemberList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/members/{memberId}": {
+      "get": {
+        "operationId": "getMember",
+        "tags": [
+          "Household members"
+        ],
+        "summary": "Get a financial household member",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "memberId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdMember"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household member not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateMember",
+        "tags": [
+          "Household members"
+        ],
+        "summary": "Update a financial household member",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "memberId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHouseholdMember"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Household member updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdMember"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient household permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household member not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Household member conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMember",
+        "tags": [
+          "Household members"
+        ],
+        "summary": "Delete a financial household member",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "memberId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household member deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteHouseholdMemberResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient household permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household member not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/income-sources": {
+      "post": {
+        "oprationId": "createIncomeSource",
+        "tags": [
+          "Income sources"
+        ],
+        "summary": "Create an income source",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncomeSource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Income source created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomeSource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household or member not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "oprationId": "listIncomeSources",
+        "tags": [
+          "Income sources"
+        ],
+        "summary": "List household income sources",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "memberId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "employment",
+                "self_employment",
+                "state_pension",
+                "private_pension",
+                "benefit",
+                "maintenance",
+                "rental",
+                "investment",
+                "other"
+              ]
+            },
+            "required": false,
+            "name": "type",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "required": false,
+            "name": "isActive",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "required": false,
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household income-source list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomeSourceList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/income-sources/:incomeSourceId": {
+      "get": {
+        "oprationId": "getIncomeSource",
+        "tags": [
+          "Income sources"
+        ],
+        "summary": "Get an income source",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "incomeSourceId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Income-source details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomeSource"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Income source not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "oprationId": "updateIncomeSource",
+        "tags": [
+          "Income sources"
+        ],
+        "summary": "Update an income source",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "incomeSourceId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIncomeSource"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Income source updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomeSource"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Income source not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "oprationId": "deleteIncomeSource",
+        "tags": [
+          "Income sources"
+        ],
+        "summary": "Delete an income source",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "incomeSourceId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Income source deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Income source not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/expenses": {
+      "post": {
+        "operationId": "createExpense",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Create an expense",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExpense"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Expense created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Expense"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household or member not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listExpenses",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "List household expenses",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "memberId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "housing",
+                "council_tax",
+                "utilities",
+                "food",
+                "transport",
+                "insurance",
+                "childcare",
+                "healthcare",
+                "education",
+                "communications",
+                "subscriptions",
+                "clothing",
+                "personal_care",
+                "entertainment",
+                "pets",
+                "maintenance",
+                "family_support",
+                "savings",
+                "debt_payment",
+                "tax",
+                "other"
+              ]
+            },
+            "required": false,
+            "name": "category",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "essential",
+                "important",
+                "discretionary"
+              ]
+            },
+            "required": false,
+            "name": "priority",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "required": false,
+            "name": "isActive",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "required": false,
+            "name": "includeInBudget",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "required": false,
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household expense list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/expenses/{expenseId}": {
+      "get": {
+        "operationId": "getExpense",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Get an expense",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "expenseId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expense details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Expense"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Expense not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateExpense",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Update an expense",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "expenseId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExpense"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Expense updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Expense"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Expense not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteExpense",
+        "tags": [
+          "Expenses"
+        ],
+        "summary": "Delete an expense",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "expenseId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expense deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Expense not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/households/{householdId}/affordability/calculate": {
+      "post": {
+        "operationId": "calculateAffordability",
+        "tags": [
+          "Affordability"
+        ],
+        "summary": "Calculate household affordability",
+        "description": "Calculates household affordability using active income sources, expenses and debts.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "householdId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculateAffordabilityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Household affordability assessment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AffordabilityAssessment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Household not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message",
+                        "requestId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

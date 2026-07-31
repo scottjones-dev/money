@@ -30,7 +30,9 @@
 		"db:studio": "drizzle-kit studio",
 		"db:test": "tsx src/db/check-connection.ts",
 		"auth:generate": "pnpm dlx @better-auth/cli@latest generate --config src/lib/auth.ts --output ./src/db/schema/auth.schema.ts -y",
-		"verify": "pnpm check && pnpm typecheck && pnpm test && pnpm build"
+		"verify": "pnpm check && pnpm typecheck && pnpm test && pnpm build",
+		"openapi:export": "tsx scripts/export-openapi.ts",
+		"openapi:check": "pnpm openapi:export && git diff --exit-code -- openapi/openapi.json"
 	},
 	"dependencies": {
 		"@better-auth/drizzle-adapter": "^1.6.25",

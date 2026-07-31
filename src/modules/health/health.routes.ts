@@ -5,6 +5,7 @@ import { jsonContent } from "stoker/openapi/helpers";
 import { healthResponseSchema } from "./health.schemas";
 
 export const healthRoute = createRoute({
+	oprationId: "health",
 	method: "get",
 	path: "/",
 	tags: ["Health"],

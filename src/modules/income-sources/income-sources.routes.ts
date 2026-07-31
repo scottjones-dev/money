@@ -16,6 +16,7 @@ import {
 const tags = ["Income sources"];
 
 export const createIncomeSourceRoute = createRoute({
+	oprationId: "createIncomeSource",
 	method: "post",
 	path: "/",
 	tags,
@@ -83,6 +84,7 @@ export const createIncomeSourceRoute = createRoute({
 });
 
 export const listIncomeSourcesRoute = createRoute({
+	oprationId: "listIncomeSources",
 	method: "get",
 	path: "/",
 	tags,
@@ -124,6 +126,7 @@ export const listIncomeSourcesRoute = createRoute({
 });
 
 export const getIncomeSourceRoute = createRoute({
+	oprationId: "getIncomeSource",
 	method: "get",
 	path: "/:incomeSourceId",
 	tags,
@@ -155,6 +158,7 @@ export const getIncomeSourceRoute = createRoute({
 });
 
 export const updateIncomeSourceRoute = createRoute({
+	oprationId: "updateIncomeSource",
 	method: "patch",
 	path: "/:incomeSourceId",
 	tags,
@@ -213,6 +217,7 @@ export const updateIncomeSourceRoute = createRoute({
 });
 
 export const deleteIncomeSourceRoute = createRoute({
+	oprationId: "deleteIncomeSource",
 	method: "delete",
 	path: "/:incomeSourceId",
 	tags,
