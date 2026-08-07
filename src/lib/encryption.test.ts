@@ -19,9 +19,13 @@ describe("sensitive payload encryption", () => {
 
 	it("rejects tampered ciphertext", () => {
 		const encrypted = encryptJson({ secret: "value" });
+		const parts = encrypted.value.split(".");
+		const ciphertext = parts.at(-1) ?? "";
+		parts[parts.length - 1] =
+			`${ciphertext.startsWith("A") ? "B" : "A"}${ciphertext.slice(1)}`;
 		const tampered = {
 			...encrypted,
-			value: `${encrypted.value.slice(0, -1)}A`,
+			value: parts.join("."),
 		};
 		expect(() => decryptJson(tampered)).toThrow();
 	});

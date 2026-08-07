@@ -35,6 +35,7 @@ Generate a Better Auth secret with at least 32 characters and supply valid Postg
 | `REDIS_URL` | Redis URL for shared rate limits |
 | `BETTER_AUTH_URL` | Better Auth base URL |
 | `BETTER_AUTH_SECRET` | Better Auth signing secret, at least 32 characters |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Comma-separated trusted mobile deep-link origins; defaults to `alicemoney://` |
 | `DATA_ENCRYPTION_CURRENT_KEY_ID` | ID of the AES-256-GCM key used for new sensitive payloads |
 | `DATA_ENCRYPTION_KEYS` | Comma-separated `keyId:base64Key` keyring; each decoded key must be 32 bytes |
 | `LOG_LEVEL` | Pino log level |
@@ -97,6 +98,10 @@ These outputs are estimates. They are not official benefit decisions, regulated 
 ## TypeScript SDK generation
 
 The combined OpenAPI contract is committed at `openapi/openapi.json`. The deterministic money-only contract is committed at `openapi/money.openapi.json` and drives SDK generation. Better Auth operations are intentionally absent from the money SDK: use Better Auth's official client for sign-in and session handling.
+
+### Expo authentication
+
+The API enables Better Auth's Expo server plugin. Set the Expo application's scheme to `alicemoney` (or set `BETTER_AUTH_TRUSTED_ORIGINS` to the scheme you choose) and configure its Better Auth client with the full base URL `https://money.alicesystems.co.uk/v1/auth`. Native client packages such as `@better-auth/expo/client` and `expo-secure-store` belong in the mobile repository, not this API.
 
 Generate the Fetch-based TypeScript SDK into the gitignored `.tmp/sdk` directory and compile its usage fixture:
 

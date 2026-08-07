@@ -14949,6 +14949,67 @@
 				"summary": "Displays an error page"
 			}
 		},
+		"/v1/auth/expo-authorization-proxy": {
+			"get": {
+				"tags": ["Authentication"],
+				"description": "Call getExpoAuthorizationProxy",
+				"operationId": "authGetExpoAuthorizationProxy",
+				"security": [
+					{
+						"apiKeyCookie": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "authorizationURL",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						},
+						"description": "The authorizationURL value for this authentication request."
+					},
+					{
+						"name": "oauthState",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						},
+						"description": "The oauthState value for this authentication request."
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "The authentication operation completed successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthSuccessResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/AuthBadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/AuthUnauthorized"
+					},
+					"403": {
+						"$ref": "#/components/responses/AuthForbidden"
+					},
+					"404": {
+						"$ref": "#/components/responses/AuthNotFound"
+					},
+					"429": {
+						"$ref": "#/components/responses/RateLimited"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				},
+				"summary": "Call getExpoAuthorizationProxy"
+			}
+		},
 		"/v1/auth/organization/create": {
 			"post": {
 				"tags": ["Organizations"],
