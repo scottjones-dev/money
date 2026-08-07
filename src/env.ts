@@ -24,6 +24,7 @@ const parsedEnv = createEnv({
 
 		BETTER_AUTH_URL: z.url(),
 		BETTER_AUTH_SECRET: z.string().min(32),
+		BETTER_AUTH_TRUSTED_ORIGINS: z.string().optional(),
 		DATA_ENCRYPTION_KEYS: z.string().optional(),
 		DATA_ENCRYPTION_CURRENT_KEY_ID: z.string().min(1).default("development"),
 
