@@ -7,6 +7,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 
@@ -123,6 +124,7 @@ export const debtPayments = pgTable(
 		 * account information.
 		 */
 		reference: text("reference"),
+		referenceKeyId: text("reference_key_id"),
 
 		/**
 		 * Optional idempotency key used to prevent duplicate payments when
@@ -173,7 +175,10 @@ export const debtPayments = pgTable(
 			table.paymentDate,
 		),
 
-		index("debt_payments_idempotency_key_idx").on(table.idempotencyKey),
+		uniqueIndex("debt_payments_household_idempotency_unique").on(
+			table.householdId,
+			table.idempotencyKey,
+		),
 	],
 );
 

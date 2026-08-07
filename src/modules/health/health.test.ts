@@ -10,10 +10,12 @@ import { healthRoute } from "./health.routes";
 vi.mock("./health.repository", () => ({
 	healthRepository: {
 		checkDatabase: vi.fn(),
+		checkRedis: vi.fn(),
 	},
 }));
 
 const mockedCheckDatabase = vi.mocked(healthRepository.checkDatabase);
+const mockedCheckRedis = vi.mocked(healthRepository.checkRedis);
 
 function createTestApp() {
 	const app = createRouter();
@@ -26,6 +28,7 @@ function createTestApp() {
 describe("GET /", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		mockedCheckRedis.mockResolvedValue({ status: "disabled", latencyMs: 0 });
 	});
 
 	it("returns 200 when the database is available", async () => {
@@ -43,6 +46,7 @@ describe("GET /", () => {
 
 		expect(body.status).toBe("ok");
 		expect(body.dependencies.database.status).toBe("up");
+		expect(body.dependencies.redis.status).toBe("disabled");
 	});
 
 	it("returns 503 when the database is unavailable", async () => {

@@ -7,6 +7,8 @@ import {
 	householdIdParamsSchema,
 	householdListSchema,
 	householdSchema,
+	listHouseholdsQuerySchema,
+	updateHouseholdSchema,
 } from "./households.schemas";
 
 export const createHouseholdRoute = createRoute({
@@ -37,11 +39,14 @@ export const createHouseholdRoute = createRoute({
 });
 
 export const listHouseholdsRoute = createRoute({
-	oprationId: "listHouseholds",
+	operationId: "listHouseholds",
 	method: "get",
 	path: "/",
 	tags: ["Households"],
 	summary: "List accessible households",
+	request: {
+		query: listHouseholdsQuerySchema,
+	},
 	responses: {
 		200: jsonContent(
 			householdListSchema,
@@ -68,6 +73,33 @@ export const getHouseholdRoute = createRoute({
 
 		404: jsonContent(errorResponseSchema, "Household was not found"),
 
+		422: jsonContent(errorResponseSchema, "Request validation failed"),
+	},
+});
+
+export const updateHouseholdRoute = createRoute({
+	operationId: "updateHousehold",
+	method: "patch",
+	path: "/{householdId}",
+	tags: ["Households"],
+	summary: "Update a household",
+	description:
+		"Updates household identity or confirms the UK nation used by devolved calculators.",
+	request: {
+		params: householdIdParamsSchema,
+		body: {
+			required: true,
+			content: { "application/json": { schema: updateHouseholdSchema } },
+		},
+	},
+	responses: {
+		200: jsonContent(householdSchema, "Updated household"),
+		401: jsonContent(errorResponseSchema, "Authentication is required"),
+		403: jsonContent(
+			errorResponseSchema,
+			"Household administration permission is required",
+		),
+		404: jsonContent(errorResponseSchema, "Household was not found"),
 		422: jsonContent(errorResponseSchema, "Request validation failed"),
 	},
 });

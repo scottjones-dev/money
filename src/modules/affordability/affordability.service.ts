@@ -1,7 +1,6 @@
 // src/modules/affordability/affordability.service.ts
-import Decimal from "decimal.js";
-
 import type { Debt, Expense, IncomeSource } from "@/db/schema";
+import { normaliseAmountToMonthly } from "@/shared/frequency/normalise-frequency";
 import { Money } from "@/shared/money/money";
 import { affordabilityRepository } from "./affordability.repository";
 import type {
@@ -13,25 +12,6 @@ import {
 	type AffordabilityIncomeInput,
 	calculateAffordability,
 } from "./domain";
-
-type PaymentFrequency =
-	| "weekly"
-	| "fortnightly"
-	| "four_weekly"
-	| "monthly"
-	| "quarterly"
-	| "half_yearly"
-	| "yearly";
-
-const PAYMENTS_PER_YEAR: Record<PaymentFrequency, Decimal> = {
-	weekly: new Decimal(52),
-	fortnightly: new Decimal(26),
-	four_weekly: new Decimal(13),
-	monthly: new Decimal(12),
-	quarterly: new Decimal(4),
-	half_yearly: new Decimal(2),
-	yearly: new Decimal(1),
-};
 
 const BENEFIT_INCOME_TYPES = new Set<IncomeSource["type"]>(["benefit"]);
 
@@ -50,15 +30,13 @@ const HOUSING_EXPENSE_CATEGORIES = new Set<Expense["category"]>([
 
 function normaliseToMonthly(
 	amount: string,
-	frequency: PaymentFrequency | "one_off",
+	frequency: IncomeSource["frequency"],
 ): Money {
 	if (frequency === "one_off") {
 		return Money.zero();
 	}
 
-	const annualAmount = new Decimal(amount).mul(PAYMENTS_PER_YEAR[frequency]);
-
-	return Money.from(annualAmount.div(12));
+	return normaliseAmountToMonthly(amount, frequency);
 }
 
 function sumMoney(values: Money[]): Money {

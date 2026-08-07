@@ -65,15 +65,31 @@ export const membersRepository = {
 		return member;
 	},
 
-	async findAllByHouseholdId(householdId: string) {
+	async findAllByHouseholdId(input: {
+		householdId: string;
+		limit: number;
+		offset: number;
+	}) {
 		return db
 			.select()
 			.from(householdMembers)
-			.where(eq(householdMembers.householdId, householdId))
+			.where(eq(householdMembers.householdId, input.householdId))
 			.orderBy(
 				asc(householdMembers.memberType),
 				asc(householdMembers.firstName),
-			);
+				asc(householdMembers.id),
+			)
+			.limit(input.limit)
+			.offset(input.offset);
+	},
+
+	async countByHouseholdId(householdId: string): Promise<number> {
+		const [result] = await db
+			.select({ count: count() })
+			.from(householdMembers)
+			.where(eq(householdMembers.householdId, householdId));
+
+		return result?.count ?? 0;
 	},
 
 	async findById(input: { householdId: string; memberId: string }) {

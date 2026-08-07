@@ -1,5 +1,12 @@
 import { z } from "@hono/zod-openapi";
 
+export { errorResponseSchema as expenseErrorResponseSchema } from "@/shared/schemas/common.schema";
+
+import {
+	createPaginatedResponseSchema,
+	paginationQuerySchema,
+} from "@/shared/schemas/pagination.schema";
+
 const moneyAmountSchema = z
 	.string()
 	.trim()
@@ -151,6 +158,7 @@ export const updateExpenseSchema = z
 	.openapi("UpdateExpense");
 
 export const listExpensesQuerySchema = z.object({
+	...paginationQuerySchema.shape,
 	memberId: z.uuid().optional(),
 
 	category: expenseCategorySchema.optional(),
@@ -166,10 +174,6 @@ export const listExpensesQuerySchema = z.object({
 		.enum(["true", "false"])
 		.transform((value) => value === "true")
 		.optional(),
-
-	page: z.coerce.number().int().min(1).default(1),
-
-	pageSize: z.coerce.number().int().min(1).max(100).default(25),
 });
 
 export const normalisedExpenseSchema = z.object({
@@ -204,38 +208,16 @@ export const expenseResponseSchema = z
 	})
 	.openapi("Expense");
 
-export const expenseListResponseSchema = z
+export const expenseListResponseSchema = createPaginatedResponseSchema(
+	expenseResponseSchema,
+	"ExpenseList",
+);
+
+export const deleteExpenseResponseSchema = z
 	.object({
-		items: z.array(expenseResponseSchema),
-
-		meta: z.object({
-			page: z.number().int(),
-			pageSize: z.number().int(),
-			total: z.number().int(),
-			totalPages: z.number().int(),
-		}),
+		success: z.literal(true),
 	})
-	.openapi("ExpenseList");
-
-export const deleteExpenseResponseSchema = z.object({
-	success: z.literal(true),
-});
-
-export const expenseErrorResponseSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-		requestId: z.string(),
-		details: z
-			.array(
-				z.object({
-					field: z.string().optional(),
-					message: z.string(),
-				}),
-			)
-			.optional(),
-	}),
-});
+	.openapi("DeleteExpenseResponse");
 
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
 

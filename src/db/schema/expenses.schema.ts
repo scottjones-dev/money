@@ -8,6 +8,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 
@@ -181,6 +182,8 @@ export const expenses = pgTable(
 
 		notes: text("notes"),
 
+		sourceCalculationId: uuid("source_calculation_id"),
+
 		createdAt: timestamp("created_at", {
 			withTimezone: true,
 			mode: "date",
@@ -230,6 +233,9 @@ export const expenses = pgTable(
 		),
 
 		index("expenses_account_reference_hash_idx").on(table.accountReferenceHash),
+		uniqueIndex("expenses_source_calculation_unique").on(
+			table.sourceCalculationId,
+		),
 	],
 );
 

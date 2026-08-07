@@ -1,3 +1,4 @@
+import { getRequiredHousehold } from "@/shared/http/required-household";
 import type { AppRouteHandler } from "@/types/app";
 
 import type {
@@ -9,27 +10,10 @@ import type {
 } from "./members.routes";
 import { membersService } from "./members.service";
 
-function getHouseholdOrThrow(context: {
-	get: (key: "household") => {
-		id: string;
-		role: string;
-	} | null;
-}) {
-	const household = context.get("household");
-
-	if (!household) {
-		throw new Error(
-			"Household access middleware did not set the household context.",
-		);
-	}
-
-	return household;
-}
-
 export const createMemberHandler: AppRouteHandler<
 	typeof createMemberRoute
 > = async (context) => {
-	const household = getHouseholdOrThrow(context);
+	const household = getRequiredHousehold(context.get("household"));
 	const data = context.req.valid("json");
 
 	const member = await membersService.create({
@@ -44,9 +28,13 @@ export const createMemberHandler: AppRouteHandler<
 export const listMembersHandler: AppRouteHandler<
 	typeof listMembersRoute
 > = async (context) => {
-	const household = getHouseholdOrThrow(context);
+	const household = getRequiredHousehold(context.get("household"));
+	const query = context.req.valid("query");
 
-	const members = await membersService.list(household.id);
+	const members = await membersService.list({
+		householdId: household.id,
+		query,
+	});
 
 	return context.json(members, 200);
 };
@@ -54,7 +42,7 @@ export const listMembersHandler: AppRouteHandler<
 export const getMemberHandler: AppRouteHandler<typeof getMemberRoute> = async (
 	context,
 ) => {
-	const household = getHouseholdOrThrow(context);
+	const household = getRequiredHousehold(context.get("household"));
 	const { memberId } = context.req.valid("param");
 
 	const member = await membersService.get({
@@ -81,7 +69,7 @@ export const getMemberHandler: AppRouteHandler<typeof getMemberRoute> = async (
 export const updateMemberHandler: AppRouteHandler<
 	typeof updateMemberRoute
 > = async (context) => {
-	const household = getHouseholdOrThrow(context);
+	const household = getRequiredHousehold(context.get("household"));
 	const { memberId } = context.req.valid("param");
 	const data = context.req.valid("json");
 
@@ -98,7 +86,7 @@ export const updateMemberHandler: AppRouteHandler<
 export const deleteMemberHandler: AppRouteHandler<
 	typeof deleteMemberRoute
 > = async (context) => {
-	const household = getHouseholdOrThrow(context);
+	const household = getRequiredHousehold(context.get("household"));
 	const { memberId } = context.req.valid("param");
 
 	const result = await membersService.delete({

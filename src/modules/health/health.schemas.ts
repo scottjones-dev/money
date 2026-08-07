@@ -3,7 +3,7 @@ import { z } from "@hono/zod-openapi";
 
 export const dependencyHealthSchema = z
 	.object({
-		status: z.enum(["up", "down"]),
+		status: z.enum(["up", "down", "disabled"]),
 		latencyMs: z.number().int().nonnegative(),
 	})
 	.openapi("DependencyHealth");
@@ -17,6 +17,7 @@ export const healthResponseSchema = z
 		uptimeSeconds: z.number().nonnegative(),
 		dependencies: z.object({
 			database: dependencyHealthSchema,
+			redis: dependencyHealthSchema,
 		}),
 	})
 	.openapi("HealthResponse");

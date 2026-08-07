@@ -6,11 +6,13 @@ import { ERROR_CODES } from "@/shared/errors/error-codes";
 
 import { nationalInsuranceRules2025To2026 } from "./national-insurance/2025-26";
 import { nationalInsuranceRules2026To2027 } from "./national-insurance/2026-27";
+import { historicalNationalInsuranceRules } from "./national-insurance/historical";
 
 import { incomeTaxRules2025To2026EnglandWalesNorthernIreland } from "./tax/2025-26/england-wales-ni";
 import { incomeTaxRules2025To2026Scotland } from "./tax/2025-26/scotland";
 import { incomeTaxRules2026To2027EnglandWalesNorthernIreland } from "./tax/2026-27/england-wales-ni";
 import { incomeTaxRules2026To2027Scotland } from "./tax/2026-27/scotland";
+import { historicalIncomeTaxRules } from "./tax/historical";
 
 export const taxJurisdictions = [
 	"england",
@@ -153,9 +155,14 @@ registerIncomeTaxRules(incomeTaxRules2026To2027EnglandWalesNorthernIreland);
 
 registerIncomeTaxRules(incomeTaxRules2026To2027Scotland);
 
+for (const rules of historicalIncomeTaxRules) registerIncomeTaxRules(rules);
+
 registerNationalInsuranceRules(nationalInsuranceRules2025To2026);
 
 registerNationalInsuranceRules(nationalInsuranceRules2026To2027);
+
+for (const rules of historicalNationalInsuranceRules)
+	registerNationalInsuranceRules(rules);
 
 export function getIncomeTaxRules(input: {
 	taxYear: TaxYear | string | number;

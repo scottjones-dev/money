@@ -6,16 +6,21 @@ import type { HealthResponse } from "./health.schemas";
 
 export const healthService = {
 	async getHealth(): Promise<HealthResponse> {
-		const database = await healthRepository.checkDatabase();
+		const [database, redis] = await Promise.all([
+			healthRepository.checkDatabase(),
+			healthRepository.checkRedis(),
+		]);
 
 		return {
-			status: database.status === "up" ? "ok" : "degraded",
+			status:
+				database.status === "up" && redis.status !== "down" ? "ok" : "degraded",
 			service: "uk-finance-api",
 			version: API_VERSION,
 			timestamp: new Date().toISOString(),
 			uptimeSeconds: Math.floor(process.uptime()),
 			dependencies: {
 				database,
+				redis,
 			},
 		};
 	},

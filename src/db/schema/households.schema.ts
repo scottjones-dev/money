@@ -1,5 +1,6 @@
 import {
 	index,
+	pgEnum,
 	pgTable,
 	text,
 	timestamp,
@@ -8,6 +9,13 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { organization } from "./auth.schema";
+
+export const ukNationEnum = pgEnum("uk_nation", [
+	"england",
+	"scotland",
+	"wales",
+	"northern_ireland",
+]);
 
 export const households = pgTable(
 	"households",
@@ -25,6 +33,8 @@ export const households = pgTable(
 		currency: text("currency").notNull().default("GBP"),
 
 		country: text("country").notNull().default("GB"),
+
+		nation: ukNationEnum("nation"),
 
 		postcodeArea: text("postcode_area"),
 

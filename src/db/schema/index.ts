@@ -5,6 +5,7 @@ export * from "./calculations.schema";
 export * from "./debt-payments.schema";
 export * from "./debts.schema";
 export * from "./expenses.schema";
+export * from "./financial-records.schema";
 export * from "./households.schema";
 export * from "./incomes.schema";
 export * from "./members.schema";

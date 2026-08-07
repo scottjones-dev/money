@@ -8,6 +8,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 import { households } from "./households.schema";
@@ -78,6 +79,9 @@ export const incomeSources = pgTable(
 
 		notes: text("notes"),
 
+		sourceCalculationId: uuid("source_calculation_id"),
+		sourceCalculationKey: text("source_calculation_key"),
+
 		createdAt: timestamp("created_at", {
 			withTimezone: true,
 			mode: "date",
@@ -101,6 +105,10 @@ export const incomeSources = pgTable(
 		index("income_sources_type_idx").on(table.type),
 
 		index("income_sources_active_idx").on(table.isActive),
+		uniqueIndex("income_sources_source_calculation_key_unique").on(
+			table.sourceCalculationId,
+			table.sourceCalculationKey,
+		),
 	],
 );
 

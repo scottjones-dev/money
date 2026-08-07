@@ -1,0 +1,93 @@
+name: Release and Publish Money SDK
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+      sha: ${{ steps.release.outputs.sha }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release
+    if: needs.release.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: money_api
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      PORT: 9000
+      PUBLIC_BASE_URL: http://localhost:9000
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/money_api
+      DATABASE_SSL: "false"
+      REDIS_URL: redis://localhost:6379
+      BETTER_AUTH_URL: http://localhost:9000
+      BETTER_AUTH_SECRET: release-only-secret-with-at-least-32-characters
+      LOG_LEVEL: error
+      SDK_TAG: ${{ needs.release.outputs.tag_name }}
+      SDK_VERSION: ${{ needs.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.sha }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: Install OIDC-compatible npm
+        run: npm install --global "npm@^11.5.1"
+      - name: Validate release version
+        shell: bash
+        run: |
+          test "$SDK_TAG" = "sdk-v$SDK_VERSION"
+          [[ "$SDK_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
+      - run: pnpm openapi:check
+      - run: pnpm test:integration
+      - run: pnpm sdk:build
+      - run: pnpm tsx scripts/prepare-sdk-package.ts
+      - run: npm pack --dry-run ./.tmp/npm-package
+      - run: npm publish --provenance --access public ./.tmp/npm-package

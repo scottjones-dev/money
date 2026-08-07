@@ -1,8 +1,13 @@
 // src/middleware/rate-limit.middleware.ts
 
 import { createMiddleware } from "hono/factory";
-import { RateLimiterMemory, type RateLimiterRes } from "rate-limiter-flexible";
+import {
+	RateLimiterMemory,
+	RateLimiterRedis,
+	type RateLimiterRes,
+} from "rate-limiter-flexible";
 
+import { redis } from "@/lib/redis";
 import type { AppBindings } from "@/types/app";
 
 export interface RateLimitOptions {
@@ -52,22 +57,6 @@ function getClientIp(
 		return cloudflareIp;
 	}
 
-	const forwardedFor = context.req.header("x-forwarded-for");
-
-	if (forwardedFor) {
-		const firstAddress = forwardedFor.split(",").at(0)?.trim();
-
-		if (firstAddress) {
-			return firstAddress;
-		}
-	}
-
-	const realIp = context.req.header("x-real-ip")?.trim();
-
-	if (realIp) {
-		return realIp;
-	}
-
 	return "unknown";
 }
 
@@ -97,12 +86,22 @@ function secondsUntilReset(msBeforeNext: number): number {
 }
 
 export function createRateLimitMiddleware(options: RateLimitOptions) {
-	const limiter = new RateLimiterMemory({
+	const limiterOptions = {
 		points: options.points,
 		duration: options.durationSeconds,
 		blockDuration: options.blockDurationSeconds ?? 0,
 		keyPrefix: options.keyPrefix,
-	});
+	};
+	const insuranceLimiter = new RateLimiterMemory(limiterOptions);
+	const limiter = redis
+		? new RateLimiterRedis({
+				...limiterOptions,
+				storeClient: redis,
+				useRedisPackage: true,
+				insuranceLimiter,
+				rejectIfRedisNotReady: false,
+			})
+		: insuranceLimiter;
 
 	return createMiddleware<AppBindings>(async (context, next) => {
 		const keyGenerator = options.keyGenerator ?? defaultKeyGenerator;

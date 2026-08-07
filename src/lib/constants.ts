@@ -7,3 +7,5 @@ export const API_DESCRIPTION =
 export const API_VERSION = "0.0.1";
 
 export const API_PREFIX = "/v1";
+
+export const LOCAL_BASE_URL = "http://localhost:9000";

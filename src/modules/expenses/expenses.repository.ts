@@ -1,11 +1,6 @@
 import { and, count, desc, eq, type SQL } from "drizzle-orm";
 
-import {
-	type Expense,
-	expenses,
-	householdMembers,
-	type NewExpense,
-} from "@/db/schema";
+import { type Expense, expenses, type NewExpense } from "@/db/schema";
 import { db } from "@/lib/database";
 
 export interface ExpenseListFilters {
@@ -67,21 +62,6 @@ function createExpenseConditions(
 }
 
 export const expensesRepository = {
-	async findMember(input: { householdId: string; memberId: string }) {
-		const [member] = await db
-			.select()
-			.from(householdMembers)
-			.where(
-				and(
-					eq(householdMembers.id, input.memberId),
-					eq(householdMembers.householdId, input.householdId),
-				),
-			)
-			.limit(1);
-
-		return member ?? null;
-	},
-
 	async findById(input: { householdId: string; expenseId: string }) {
 		const [expense] = await db
 			.select()

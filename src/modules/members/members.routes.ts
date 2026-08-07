@@ -9,6 +9,7 @@ import {
 	householdMemberParamsSchema,
 	householdMemberSchema,
 	householdParamsSchema,
+	listMembersQuerySchema,
 	updateHouseholdMemberSchema,
 } from "./members.schemas";
 
@@ -47,6 +48,7 @@ export const listMembersRoute = createRoute({
 	summary: "List financial household members",
 	request: {
 		params: householdParamsSchema,
+		query: listMembersQuerySchema,
 	},
 	responses: {
 		200: jsonContent(householdMemberListSchema, "Household members"),

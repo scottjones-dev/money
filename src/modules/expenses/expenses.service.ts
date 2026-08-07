@@ -1,8 +1,14 @@
 import Decimal from "decimal.js";
 
 import type { Expense } from "@/db/schema";
+import { membersRepository } from "@/modules/members/members.repository";
 import { AppError } from "@/shared/errors/app-error";
 import { ERROR_CODES } from "@/shared/errors/error-codes";
+import { normaliseDecimalToYearly } from "@/shared/frequency/normalise-frequency";
+import {
+	createPaginationMeta,
+	getPaginationOffset,
+} from "@/shared/schemas/pagination.schema";
 import type { HouseholdRole } from "@/types/app";
 
 import { expensesRepository } from "./expenses.repository";
@@ -12,18 +18,6 @@ import type {
 	ListExpensesQuery,
 	UpdateExpenseInput,
 } from "./expenses.schemas";
-
-type RecurringFrequency = Exclude<Expense["frequency"], "one_off">;
-
-const PAYMENTS_PER_YEAR: Record<RecurringFrequency, Decimal> = {
-	weekly: new Decimal(52),
-	fortnightly: new Decimal(26),
-	four_weekly: new Decimal(13),
-	monthly: new Decimal(12),
-	quarterly: new Decimal(4),
-	half_yearly: new Decimal(2),
-	yearly: new Decimal(1),
-};
 
 function assertCanManageExpenses(role: HouseholdRole): void {
 	if (role === "viewer") {
@@ -84,8 +78,7 @@ function normaliseExpense(
 		return null;
 	}
 
-	const value = new Decimal(amount);
-	const yearly = value.mul(PAYMENTS_PER_YEAR[frequency]);
+	const yearly = normaliseDecimalToYearly(amount, frequency);
 
 	return {
 		weekly: formatMoney(yearly.div(52)),
@@ -128,7 +121,7 @@ async function assertMemberBelongsToHousehold(input: {
 	householdId: string;
 	memberId: string;
 }): Promise<void> {
-	const member = await expensesRepository.findMember(input);
+	const member = await membersRepository.findById(input);
 
 	if (!member) {
 		throw new AppError({
@@ -211,7 +204,7 @@ export const expensesService = {
 	},
 
 	async list(input: { householdId: string; query: ListExpensesQuery }) {
-		const offset = (input.query.page - 1) * input.query.pageSize;
+		const offset = getPaginationOffset(input.query);
 
 		const filters = {
 			householdId: input.householdId,
@@ -232,14 +225,11 @@ export const expensesService = {
 		]);
 
 		return {
-			items: items.map(toExpenseResponse),
-
-			meta: {
-				page: input.query.page,
-				pageSize: input.query.pageSize,
-				total,
-				totalPages: total === 0 ? 0 : Math.ceil(total / input.query.pageSize),
-			},
+			data: items.map(toExpenseResponse),
+			pagination: createPaginationMeta({
+				...input.query,
+				totalItems: total,
+			}),
 		};
 	},
 

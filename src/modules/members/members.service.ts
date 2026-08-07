@@ -1,9 +1,13 @@
 import { AppError } from "@/shared/errors/app-error";
-
+import {
+	createPaginationMeta,
+	getPaginationOffset,
+} from "@/shared/schemas/pagination.schema";
 import { membersRepository } from "./members.repository";
 import type {
 	CreateHouseholdMemberInput,
 	HouseholdMemberResponse,
+	ListMembersQuery,
 	UpdateHouseholdMemberInput,
 } from "./members.schemas";
 
@@ -193,10 +197,23 @@ export const membersService = {
 		return mapMemberResponse(member);
 	},
 
-	async list(householdId: string): Promise<HouseholdMemberResponse[]> {
-		const members = await membersRepository.findAllByHouseholdId(householdId);
+	async list(input: { householdId: string; query: ListMembersQuery }) {
+		const [members, totalItems] = await Promise.all([
+			membersRepository.findAllByHouseholdId({
+				householdId: input.householdId,
+				limit: input.query.pageSize,
+				offset: getPaginationOffset(input.query),
+			}),
+			membersRepository.countByHouseholdId(input.householdId),
+		]);
 
-		return members.map(mapMemberResponse);
+		return {
+			data: members.map(mapMemberResponse),
+			pagination: createPaginationMeta({
+				...input.query,
+				totalItems,
+			}),
+		};
 	},
 
 	async get(input: {

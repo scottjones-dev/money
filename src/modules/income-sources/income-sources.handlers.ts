@@ -1,7 +1,6 @@
 // src/modules/income-sources/income-sources.handlers.ts
-import { AppError } from "@/shared/errors/app-error";
-import { ERROR_CODES } from "@/shared/errors/error-codes";
-import type { AppRouteHandler, HouseholdContext } from "@/types/app";
+import { getRequiredHousehold } from "@/shared/http/required-household";
+import type { AppRouteHandler } from "@/types/app";
 
 import type {
 	createIncomeSourceRoute,
@@ -11,20 +10,6 @@ import type {
 	updateIncomeSourceRoute,
 } from "./income-sources.routes";
 import { incomeSourcesService } from "./income-sources.service";
-
-function getRequiredHousehold(
-	household: HouseholdContext | null,
-): HouseholdContext {
-	if (!household) {
-		throw new AppError({
-			code: ERROR_CODES.HOUSEHOLD_NOT_FOUND,
-			message: "The household could not be found.",
-			statusCode: 404,
-		});
-	}
-
-	return household;
-}
 
 export const createIncomeSourceHandler: AppRouteHandler<
 	typeof createIncomeSourceRoute

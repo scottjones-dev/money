@@ -1,24 +1,9 @@
 // src/modules/affordability/affordability.handlers.ts
-import { AppError } from "@/shared/errors/app-error";
-import { ERROR_CODES } from "@/shared/errors/error-codes";
-import type { AppRouteHandler, HouseholdContext } from "@/types/app";
+import { getRequiredHousehold } from "@/shared/http/required-household";
+import type { AppRouteHandler } from "@/types/app";
 
 import type { calculateAffordabilityRoute } from "./affordability.routes";
 import { affordabilityService } from "./affordability.service";
-
-function getRequiredHousehold(
-	household: HouseholdContext | null,
-): HouseholdContext {
-	if (!household) {
-		throw new AppError({
-			code: ERROR_CODES.HOUSEHOLD_NOT_FOUND,
-			message: "The household could not be found.",
-			statusCode: 404,
-		});
-	}
-
-	return household;
-}
 
 export const calculateAffordabilityHandler: AppRouteHandler<
 	typeof calculateAffordabilityRoute

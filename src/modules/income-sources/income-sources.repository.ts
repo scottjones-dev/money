@@ -2,7 +2,6 @@
 import { and, count, desc, eq, type SQL } from "drizzle-orm";
 
 import {
-	householdMembers,
 	type IncomeSource,
 	incomeSources,
 	type NewIncomeSource,
@@ -53,21 +52,6 @@ function createIncomeSourceConditions(
 }
 
 export const incomeSourcesRepository = {
-	async findMember(input: { householdId: string; memberId: string }) {
-		const [member] = await db
-			.select()
-			.from(householdMembers)
-			.where(
-				and(
-					eq(householdMembers.id, input.memberId),
-					eq(householdMembers.householdId, input.householdId),
-				),
-			)
-			.limit(1);
-
-		return member ?? null;
-	},
-
 	async findById(input: { householdId: string; incomeSourceId: string }) {
 		const [incomeSource] = await db
 			.select()

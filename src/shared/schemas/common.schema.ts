@@ -1,5 +1,6 @@
 // src/shared/schemas/common.schema.ts
 import { z } from "@hono/zod-openapi";
+import { ERROR_CODES } from "@/shared/errors/error-codes";
 
 export const uuidSchema = z.uuid().openapi({
 	example: "074f1038-70b1-467e-b5c6-72d14c8fa659",
@@ -90,42 +91,62 @@ export const requestIdSchema = z.string().min(1).openapi({
 
 export const errorDetailSchema = z
 	.object({
-		field: z.string().optional(),
-		message: z.string(),
+		field: z.string().optional().openapi({
+			description:
+				"The request field associated with this error, when applicable.",
+			example: "grossAmount",
+		}),
+		message: z.string().openapi({
+			description: "A human-readable explanation of the field error.",
+			example: "Must be a non-negative decimal string.",
+		}),
 	})
 	.openapi("ErrorDetail");
 
+export const errorCodeSchema = z.enum(ERROR_CODES).openapi("ErrorCode", {
+	description:
+		"A stable machine-readable code that SDK consumers can use for typed error handling.",
+	example: ERROR_CODES.HOUSEHOLD_NOT_FOUND,
+});
+
 export const errorSchema = z
 	.object({
-		code: z.string().openapi({
-			example: "HOUSEHOLD_NOT_FOUND",
-		}),
+		code: errorCodeSchema,
 
 		message: z.string().openapi({
 			example: "The household could not be found.",
+			description: "A human-readable explanation of the error.",
 		}),
 
 		requestId: requestIdSchema,
 
-		details: z.array(errorDetailSchema).optional(),
+		details: z.array(errorDetailSchema).optional().openapi({
+			description: "Optional field-level validation details.",
+		}),
 	})
 	.openapi("Error");
 
 export const errorResponseSchema = z
 	.object({
-		error: errorSchema,
+		error: errorSchema.openapi({
+			description: "The structured API error.",
+		}),
 	})
 	.openapi("ErrorResponse");
 
 export const successResponseSchema = z
 	.object({
-		success: z.literal(true),
+		success: z.literal(true).openapi({
+			description: "Confirms that the operation completed successfully.",
+		}),
 	})
 	.openapi("SuccessResponse");
 
 export const deletedResourceResponseSchema = z
 	.object({
-		success: z.literal(true),
+		success: z.literal(true).openapi({
+			description: "Confirms that the resource was deleted.",
+		}),
 		deletedId: uuidSchema,
 	})
 	.openapi("DeletedResourceResponse");

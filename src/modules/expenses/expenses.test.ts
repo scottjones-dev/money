@@ -22,9 +22,14 @@ vi.mock("@/modules/households/households.repository", () => ({
 	},
 }));
 
+vi.mock("@/modules/members/members.repository", () => ({
+	membersRepository: {
+		findById: mocks.findMember,
+	},
+}));
+
 vi.mock("@/modules/expenses/expenses.repository", () => ({
 	expensesRepository: {
-		findMember: mocks.findMember,
 		findById: mocks.findById,
 		list: mocks.list,
 		count: mocks.count,
@@ -100,6 +105,7 @@ const expense: Expense = {
 	accountReferenceEncrypted: null,
 	accountReferenceHash: null,
 	notes: null,
+	sourceCalculationId: null,
 	createdAt,
 	updatedAt,
 };
@@ -218,7 +224,7 @@ describe("expenses", () => {
 		const body = await response.json();
 
 		expect(body).toEqual({
-			items: [
+			data: [
 				{
 					id: expenseId,
 					householdId,
@@ -247,11 +253,13 @@ describe("expenses", () => {
 					updatedAt: "2026-07-30T18:30:00.000Z",
 				},
 			],
-			meta: {
+			pagination: {
 				page: 1,
 				pageSize: 25,
-				total: 1,
+				totalItems: 1,
 				totalPages: 1,
+				hasPreviousPage: false,
+				hasNextPage: false,
 			},
 		});
 
