@@ -5,6 +5,7 @@
 !.vscode/launch.json
 !.vscode/*.code-snippets
 .idea/
+.vercel/
 *.swp
 *.swo
 *~
