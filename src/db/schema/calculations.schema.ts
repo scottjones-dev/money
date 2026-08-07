@@ -19,10 +19,15 @@ export const calculationTypeEnum = pgEnum("calculation_type", [
 	"student_loan",
 	"universal_credit",
 	"benefits",
+	"payroll",
+	"childcare",
+	"child_maintenance",
+	"pension",
 	"affordability",
 	"budget",
 	"debt_repayment",
 	"household_assessment",
+	"assessment",
 ]);
 
 export const calculationStatusEnum = pgEnum("calculation_status", [
@@ -113,12 +118,47 @@ export const calculations = pgTable(
 		 */
 		input: jsonb("input").$type<CalculationInputData>().notNull(),
 
+		inputEncrypted: text("input_encrypted"),
+
 		/**
 		 * Completed calculation output.
 		 *
 		 * Null while pending or when the calculation failed.
 		 */
 		result: jsonb("result").$type<CalculationResultData>(),
+
+		resultEncrypted: text("result_encrypted"),
+
+		encryptionKeyId: text("encryption_key_id"),
+
+		warnings:
+			jsonb("warnings").$type<
+				Array<{
+					code: string;
+					message: string;
+					severity: "info" | "warning";
+				}>
+			>(),
+
+		committedLinks:
+			jsonb("committed_links").$type<
+				Array<{
+					resourceType: string;
+					resourceId: string;
+				}>
+			>(),
+
+		committedAt: timestamp("committed_at", {
+			withTimezone: true,
+			mode: "date",
+		}),
+
+		committedBy: text("committed_by"),
+
+		deletedAt: timestamp("deleted_at", {
+			withTimezone: true,
+			mode: "date",
+		}),
 
 		/**
 		 * Structured failure information.

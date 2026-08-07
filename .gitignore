@@ -1,32 +1,58 @@
-# dev
+# Editors and local tooling
 .yarn/
 !.yarn/releases
 .vscode/*
 !.vscode/launch.json
 !.vscode/*.code-snippets
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/shelf
+.idea/
+*.swp
+*.swo
+*~
 
-# deps
+# Dependencies and package-manager state
 node_modules/
+.pnpm-store/
+.pnp.*
 
-# env
+# Environment files and local credentials
 .env
-.env.production
+.env.*
+!.env.example
+!.env.*.example
+.npmrc
+!.npmrc.example
+secrets/
 
-# logs
+# Generated output and caches
+dist/
+coverage/
+.tmp/
+.cache/
+.turbo/
+.nyc_output/
+test-results/
+playwright-report/
+*.tsbuildinfo
+*.tgz
+openapi-ts-error-*.log
+
+# Local service data
+postgres-data/
+redis-data/
+.testcontainers.properties
+
+# Logs and process files
 logs/
 *.log
+*.pid
+*.pid.lock
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# misc
+# Operating-system files
 .DS_Store
-
-dist
-coverage
-src/db/migration/
+Thumbs.db
+Desktop.ini

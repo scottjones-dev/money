@@ -1,7 +1,5 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-
+import { createRouter } from "@/lib/create-app";
 import { householdAccessMiddleware } from "@/middleware/household-access.middleware";
-import type { AppBindings } from "@/types/app";
 
 import {
 	createDebtHandler,
@@ -18,7 +16,7 @@ import {
 	updateDebtRoute,
 } from "./debts.routes";
 
-const debtsRouter = new OpenAPIHono<AppBindings>();
+const debtsRouter = createRouter();
 
 debtsRouter.use("*", householdAccessMiddleware);
 

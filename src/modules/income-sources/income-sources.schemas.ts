@@ -1,12 +1,19 @@
 // src/modules/income-sources/income-sources.schemas.ts
 import { z } from "@hono/zod-openapi";
 
+export { errorResponseSchema as incomeSourceErrorResponseSchema } from "@/shared/schemas/common.schema";
+
+import {
+	createPaginatedResponseSchema,
+	paginationQuerySchema,
+} from "@/shared/schemas/pagination.schema";
+
 const moneyAmountSchema = z
 	.string()
 	.trim()
-	.regex(/^-?\d{1,12}(?:\.\d{1,2})?$/, {
+	.regex(/^\d{1,12}(?:\.\d{1,2})?$/, {
 		message:
-			"Amount must be a positive monetary value with no more than two decimal places.",
+			"Amount must be zero or greater with no more than two decimal places.",
 	})
 	.openapi({
 		example: "2450.75",
@@ -96,6 +103,7 @@ export const updateIncomeSourceSchema = z
 	.openapi("UpdateIncomeSource");
 
 export const listIncomeSourcesQuerySchema = z.object({
+	...paginationQuerySchema.shape,
 	memberId: z.uuid().optional(),
 
 	type: incomeSourceTypeSchema.optional(),
@@ -104,10 +112,6 @@ export const listIncomeSourcesQuerySchema = z.object({
 		.enum(["true", "false"])
 		.transform((value) => value === "true")
 		.optional(),
-
-	page: z.coerce.number().int().min(1).default(1),
-
-	pageSize: z.coerce.number().int().min(1).max(100).default(25),
 });
 
 export const normalisedIncomeSchema = z.object({
@@ -150,38 +154,16 @@ export const incomeSourceResponseSchema = z
 	})
 	.openapi("IncomeSource");
 
-export const incomeSourceListResponseSchema = z
+export const incomeSourceListResponseSchema = createPaginatedResponseSchema(
+	incomeSourceResponseSchema,
+	"IncomeSourceList",
+);
+
+export const deleteIncomeSourceResponseSchema = z
 	.object({
-		items: z.array(incomeSourceResponseSchema),
-
-		meta: z.object({
-			page: z.number().int(),
-			pageSize: z.number().int(),
-			total: z.number().int(),
-			totalPages: z.number().int(),
-		}),
+		success: z.literal(true),
 	})
-	.openapi("IncomeSourceList");
-
-export const deleteIncomeSourceResponseSchema = z.object({
-	success: z.literal(true),
-});
-
-export const incomeSourceErrorResponseSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-		requestId: z.string(),
-		details: z
-			.array(
-				z.object({
-					field: z.string().optional(),
-					message: z.string(),
-				}),
-			)
-			.optional(),
-	}),
-});
+	.openapi("DeleteIncomeSourceResponse");
 
 export type CreateIncomeSourceInput = z.infer<typeof createIncomeSourceSchema>;
 

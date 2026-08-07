@@ -1,6 +1,6 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth/minimal";
-import { organization } from "better-auth/plugins";
+import { openAPI, organization } from "better-auth/plugins";
 
 import * as authSchema from "@/db/schema/auth.schema";
 import { env } from "@/env";
@@ -10,6 +10,7 @@ export const auth = betterAuth({
 	appName: "UK Finance API",
 
 	baseURL: env.BETTER_AUTH_URL,
+	basePath: "/v1/auth",
 	secret: env.BETTER_AUTH_SECRET,
 
 	database: drizzleAdapter(db, {
@@ -31,6 +32,9 @@ export const auth = betterAuth({
 			allowUserToCreateOrganization: true,
 			creatorRole: "owner",
 			membershipLimit: 10,
+		}),
+		openAPI({
+			disableDefaultReference: true,
 		}),
 	],
 });

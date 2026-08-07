@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 import { member } from "@/db/schema/auth.schema";
 import { households, type NewHousehold } from "@/db/schema/households.schema";
@@ -8,9 +8,18 @@ export interface CreateHouseholdRecordInput {
 	organizationId: string;
 	name: string;
 	postcodeArea?: string;
+	nation?: "england" | "scotland" | "wales" | "northern_ireland";
 }
 
 export const householdsRepository = {
+	async findById(householdId: string) {
+		const [household] = await db
+			.select()
+			.from(households)
+			.where(eq(households.id, householdId))
+			.limit(1);
+		return household ?? null;
+	},
 	async create(input: CreateHouseholdRecordInput) {
 		const [household] = await db
 			.insert(households)
@@ -18,6 +27,7 @@ export const householdsRepository = {
 				organizationId: input.organizationId,
 				name: input.name,
 				postcodeArea: input.postcodeArea,
+				nation: input.nation,
 			} satisfies NewHousehold)
 			.returning();
 
@@ -34,7 +44,11 @@ export const householdsRepository = {
 			.where(eq(households.organizationId, organizationId));
 	},
 
-	async findAllForUser(userId: string) {
+	async findAllForUser(input: {
+		userId: string;
+		limit: number;
+		offset: number;
+	}) {
 		return db
 			.select({
 				id: households.id,
@@ -43,6 +57,7 @@ export const householdsRepository = {
 				currency: households.currency,
 				country: households.country,
 				postcodeArea: households.postcodeArea,
+				nation: households.nation,
 				role: member.role,
 				createdAt: households.createdAt,
 				updatedAt: households.updatedAt,
@@ -52,8 +67,23 @@ export const householdsRepository = {
 				households,
 				eq(member.organizationId, households.organizationId),
 			)
-			.where(eq(member.userId, userId))
-			.orderBy(desc(households.createdAt));
+			.where(eq(member.userId, input.userId))
+			.orderBy(desc(households.createdAt), desc(households.id))
+			.limit(input.limit)
+			.offset(input.offset);
+	},
+
+	async countForUser(userId: string): Promise<number> {
+		const [result] = await db
+			.select({ count: count() })
+			.from(member)
+			.innerJoin(
+				households,
+				eq(member.organizationId, households.organizationId),
+			)
+			.where(eq(member.userId, userId));
+
+		return result?.count ?? 0;
 	},
 
 	async findForUser(input: { userId: string; householdId: string }) {
@@ -65,6 +95,7 @@ export const householdsRepository = {
 				currency: households.currency,
 				country: households.country,
 				postcodeArea: households.postcodeArea,
+				nation: households.nation,
 				role: member.role,
 				createdAt: households.createdAt,
 				updatedAt: households.updatedAt,
@@ -101,5 +132,21 @@ export const householdsRepository = {
 			.limit(1);
 
 		return result ?? null;
+	},
+
+	async update(input: {
+		householdId: string;
+		values: {
+			name?: string;
+			postcodeArea?: string | null;
+			nation?: "england" | "scotland" | "wales" | "northern_ireland" | null;
+		};
+	}) {
+		const [updated] = await db
+			.update(households)
+			.set({ ...input.values, updatedAt: new Date() })
+			.where(eq(households.id, input.householdId))
+			.returning();
+		return updated ?? null;
 	},
 };

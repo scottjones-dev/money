@@ -1,8 +1,6 @@
 // src/modules/income-sources/income-sources.index.ts
-import { OpenAPIHono } from "@hono/zod-openapi";
-
+import { createRouter } from "@/lib/create-app";
 import { householdAccessMiddleware } from "@/middleware/household-access.middleware";
-import type { AppBindings } from "@/types/app";
 
 import {
 	createIncomeSourceHandler,
@@ -19,7 +17,7 @@ import {
 	updateIncomeSourceRoute,
 } from "./income-sources.routes";
 
-const incomeSourcesRouter = new OpenAPIHono<AppBindings>();
+const incomeSourcesRouter = createRouter();
 
 incomeSourcesRouter.use("*", householdAccessMiddleware);
 

@@ -1,0 +1,4887 @@
+{
+	"version": "8",
+	"dialect": "postgres",
+	"id": "aab4070a-2363-45f1-8265-f5a5b23bbfd7",
+	"prevIds": ["00000000-0000-0000-0000-000000000000"],
+	"ddl": [
+		{
+			"values": ["individual", "joint", "household"],
+			"name": "asset_ownership_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"cash",
+				"current_account",
+				"savings_account",
+				"investment",
+				"pension",
+				"property",
+				"vehicle",
+				"business",
+				"valuable",
+				"other"
+			],
+			"name": "asset_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["pending", "completed", "failed"],
+			"name": "calculation_status",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"income_tax",
+				"national_insurance",
+				"student_loan",
+				"universal_credit",
+				"benefits",
+				"affordability",
+				"budget",
+				"debt_repayment",
+				"household_assessment"
+			],
+			"name": "calculation_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"direct_debit",
+				"standing_order",
+				"bank_transfer",
+				"debit_card",
+				"cash",
+				"salary_deduction",
+				"benefit_deduction",
+				"other"
+			],
+			"name": "debt_payment_method",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["pending", "completed", "failed", "cancelled"],
+			"name": "debt_payment_status",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"scheduled",
+				"minimum",
+				"extra",
+				"settlement",
+				"refund",
+				"adjustment"
+			],
+			"name": "debt_payment_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["none", "fixed", "variable"],
+			"name": "debt_interest_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"weekly",
+				"fortnightly",
+				"four_weekly",
+				"monthly",
+				"quarterly",
+				"half_yearly",
+				"yearly"
+			],
+			"name": "debt_payment_frequency",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["priority", "non_priority"],
+			"name": "debt_priority",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["minimum_only", "snowball", "avalanche", "custom"],
+			"name": "debt_repayment_strategy",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["active", "paused", "settled", "defaulted", "written_off"],
+			"name": "debt_status",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"credit_card",
+				"overdraft",
+				"personal_loan",
+				"car_finance",
+				"mortgage",
+				"student_loan",
+				"council_tax",
+				"utility_arrears",
+				"rent_arrears",
+				"court_fine",
+				"ccj",
+				"hire_purchase",
+				"buy_now_pay_later",
+				"family_loan",
+				"other"
+			],
+			"name": "debt_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"housing",
+				"council_tax",
+				"utilities",
+				"food",
+				"transport",
+				"insurance",
+				"childcare",
+				"healthcare",
+				"education",
+				"communications",
+				"subscriptions",
+				"clothing",
+				"personal_care",
+				"entertainment",
+				"pets",
+				"maintenance",
+				"family_support",
+				"savings",
+				"debt_payment",
+				"tax",
+				"other"
+			],
+			"name": "expense_category",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"weekly",
+				"fortnightly",
+				"four_weekly",
+				"monthly",
+				"quarterly",
+				"half_yearly",
+				"yearly",
+				"one_off"
+			],
+			"name": "expense_frequency",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"direct_debit",
+				"standing_order",
+				"bank_transfer",
+				"debit_card",
+				"credit_card",
+				"cash",
+				"salary_deduction",
+				"benefit_deduction",
+				"other"
+			],
+			"name": "expense_payment_method",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["essential", "important", "discretionary"],
+			"name": "expense_priority",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"employment",
+				"self_employment",
+				"state_pension",
+				"private_pension",
+				"benefit",
+				"maintenance",
+				"rental",
+				"investment",
+				"other"
+			],
+			"name": "income_source_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"weekly",
+				"fortnightly",
+				"four_weekly",
+				"monthly",
+				"quarterly",
+				"half_yearly",
+				"yearly",
+				"one_off"
+			],
+			"name": "payment_frequency",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"employed",
+				"self_employed",
+				"unemployed",
+				"student",
+				"retired",
+				"not_working",
+				"unknown"
+			],
+			"name": "employment_status",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": ["adult", "child", "non_dependent"],
+			"name": "household_member_type",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"values": [
+				"self",
+				"partner",
+				"child",
+				"step_child",
+				"foster_child",
+				"other_dependent",
+				"non_dependent",
+				"other"
+			],
+			"name": "household_relationship",
+			"entityType": "enums",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "assets",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "account",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "invitation",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "member",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "organization",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "session",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "user",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "verification",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "calculations",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "debt_payments",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "debts",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "expenses",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "households",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "income_sources",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"isRlsEnabled": false,
+			"name": "household_members",
+			"entityType": "tables",
+			"schema": "public"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "asset_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "asset_ownership_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'household'",
+			"generated": null,
+			"identity": null,
+			"name": "ownership_type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'0.00'",
+			"generated": null,
+			"identity": null,
+			"name": "current_value",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "purchase_value",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "purchase_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "valuation_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_liquid",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "include_in_net_worth",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "is_active",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "notes",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "account_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "provider_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "user_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "access_token",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "refresh_token",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id_token",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "access_token_expires_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "refresh_token_expires_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "scope",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "password",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "organization_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "email",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "role",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'pending'",
+			"generated": null,
+			"identity": null,
+			"name": "status",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "expires_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "inviter_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "organization_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "user_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'member'",
+			"generated": null,
+			"identity": null,
+			"name": "role",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "slug",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "logo",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "metadata",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "expires_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "token",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "ip_address",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "user_agent",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "user_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "active_organization_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "email",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "email_verified",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "image",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "identifier",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "value",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "expires_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "calculation_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "calculation_status",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'pending'",
+			"generated": null,
+			"identity": null,
+			"name": "status",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "rule_set_key",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "tax_year",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "period_start",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "period_end",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "jsonb",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "input",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "jsonb",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "result",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "jsonb",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "error",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "idempotency_key",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "started_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "completed_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "debt_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "debt_payment_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'scheduled'",
+			"generated": null,
+			"identity": null,
+			"name": "type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "debt_payment_status",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'completed'",
+			"generated": null,
+			"identity": null,
+			"name": "status",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "debt_payment_method",
+			"typeSchema": "public",
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "method",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "amount",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "payment_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "balance_before",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "balance_after",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "reference",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "idempotency_key",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "notes",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "debt_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "debt_status",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'active'",
+			"generated": null,
+			"identity": null,
+			"name": "status",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "debt_priority",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'non_priority'",
+			"generated": null,
+			"identity": null,
+			"name": "priority",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "debt_repayment_strategy",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'minimum_only'",
+			"generated": null,
+			"identity": null,
+			"name": "repayment_strategy",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "creditor_name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "current_balance",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "original_balance",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "credit_limit",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "minimum_payment",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "debt_payment_frequency",
+			"typeSchema": "public",
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "payment_frequency",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "planned_payment",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "debt_interest_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'none'",
+			"generated": null,
+			"identity": null,
+			"name": "interest_type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(8,4)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "annual_interest_rate",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "numeric(2,0)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "payment_due_day",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "start_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "expected_end_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "settled_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "account_reference_encrypted",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "account_reference_hash",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "include_in_snowball",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_secured",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_joint",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "notes",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "expense_category",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "category",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "expense_priority",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'important'",
+			"generated": null,
+			"identity": null,
+			"name": "priority",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "amount",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "expense_frequency",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "frequency",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "expense_payment_method",
+			"typeSchema": "public",
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "payment_method",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "numeric(2,0)",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "payment_due_day",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "start_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "end_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "is_active",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_fixed",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "is_household_expense",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "include_in_budget",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "payee",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "account_reference_encrypted",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "account_reference_hash",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "notes",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "organization_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'GBP'",
+			"generated": null,
+			"identity": null,
+			"name": "currency",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'GB'",
+			"generated": null,
+			"identity": null,
+			"name": "country",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "postcode_area",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "income_source_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "numeric(14,2)",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "gross_amount",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "payment_frequency",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "frequency",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "is_taxable",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "true",
+			"generated": null,
+			"identity": null,
+			"name": "is_active",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "start_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "end_date",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "notes",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "gen_random_uuid()",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "uuid",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "household_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "auth_user_id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "first_name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "last_name",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "household_member_type",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "member_type",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "household_relationship",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "relationship",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "date",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "date_of_birth",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_claimant",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_partner",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_dependent",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "employment_status",
+			"typeSchema": "public",
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'unknown'",
+			"generated": null,
+			"identity": null,
+			"name": "employment_status",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "is_student",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "has_disability",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "created_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"type": "timestamp with time zone",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "now()",
+			"generated": null,
+			"identity": null,
+			"name": "updated_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "assets_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "assets_member_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "type",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "assets_type_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "is_active",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "assets_active_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "is_active",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "assets_household_active_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "user_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "account_user_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "provider_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "account_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": true,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "account_provider_account_uidx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "organization_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "invitation_organization_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "email",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "invitation_email_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "expires_at",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "invitation_expires_at_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "status",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "invitation_status_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "organization_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "member_organization_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "user_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "member_user_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "organization_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "user_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": true,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "member_organization_user_uidx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "slug",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": true,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "organization_slug_uidx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "organization"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "token",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": true,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "session_token_uidx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "user_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "session_user_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "expires_at",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "session_expires_at_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "active_organization_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "session_active_organization_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "email",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": true,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "user_email_uidx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "user"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "identifier",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "verification_identifier_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "expires_at",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "verification_expires_at_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "verification"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_member_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "type",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_type_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "status",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_status_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "tax_year",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_tax_year_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "created_at",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_created_at_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "type",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_household_type_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "status",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_household_status_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "created_at",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_household_created_at_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "idempotency_key",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "calculations_idempotency_key_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "debt_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_debt_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_member_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "payment_date",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_payment_date_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "status",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_status_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "debt_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_household_debt_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "debt_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "payment_date",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_debt_payment_date_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "payment_date",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_household_payment_date_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "idempotency_key",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debt_payments_idempotency_key_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_member_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "type",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_type_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "status",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_status_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "priority",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_priority_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "include_in_snowball",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_include_in_snowball_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "status",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_household_status_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "priority",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_household_priority_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "include_in_snowball",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_household_snowball_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "account_reference_hash",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "debts_account_reference_hash_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_member_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "category",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_category_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "priority",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_priority_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "is_active",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_active_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "frequency",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_frequency_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "is_active",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_household_active_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "category",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_household_category_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "priority",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_household_priority_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				},
+				{
+					"value": "include_in_budget",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_household_budget_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "account_reference_hash",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "expenses_account_reference_hash_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "organization_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": true,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "households_organization_id_unique",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "created_at",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "households_created_at_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "income_sources_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "income_sources_member_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "type",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "income_sources_type_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "is_active",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "income_sources_active_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "household_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "household_members_household_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "auth_user_id",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "household_members_auth_user_id_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"nameExplicit": true,
+			"columns": [
+				{
+					"value": "member_type",
+					"isExpression": false,
+					"asc": true,
+					"nullsFirst": false,
+					"opclass": null
+				}
+			],
+			"isUnique": false,
+			"where": null,
+			"with": "",
+			"method": "btree",
+			"concurrently": false,
+			"name": "household_members_member_type_idx",
+			"entityType": "indexes",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "assets_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["member_id"],
+			"schemaTo": "public",
+			"tableTo": "household_members",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "SET NULL",
+			"name": "assets_member_id_household_members_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "assets"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["user_id"],
+			"schemaTo": "public",
+			"tableTo": "user",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "account_user_id_user_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "account"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["organization_id"],
+			"schemaTo": "public",
+			"tableTo": "organization",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "invitation_organization_id_organization_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["inviter_id"],
+			"schemaTo": "public",
+			"tableTo": "user",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "invitation_inviter_id_user_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "invitation"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["organization_id"],
+			"schemaTo": "public",
+			"tableTo": "organization",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "member_organization_id_organization_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["user_id"],
+			"schemaTo": "public",
+			"tableTo": "user",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "member_user_id_user_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "member"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["user_id"],
+			"schemaTo": "public",
+			"tableTo": "user",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "session_user_id_user_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "session"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "calculations_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["member_id"],
+			"schemaTo": "public",
+			"tableTo": "household_members",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "SET NULL",
+			"name": "calculations_member_id_household_members_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "calculations"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "debt_payments_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["debt_id"],
+			"schemaTo": "public",
+			"tableTo": "debts",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "debt_payments_debt_id_debts_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["member_id"],
+			"schemaTo": "public",
+			"tableTo": "household_members",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "SET NULL",
+			"name": "debt_payments_member_id_household_members_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "debt_payments"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "debts_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["member_id"],
+			"schemaTo": "public",
+			"tableTo": "household_members",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "SET NULL",
+			"name": "debts_member_id_household_members_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "debts"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "expenses_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["member_id"],
+			"schemaTo": "public",
+			"tableTo": "household_members",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "SET NULL",
+			"name": "expenses_member_id_household_members_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "expenses"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["organization_id"],
+			"schemaTo": "public",
+			"tableTo": "organization",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "households_organization_id_organization_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "households"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "income_sources_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["member_id"],
+			"schemaTo": "public",
+			"tableTo": "household_members",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "income_sources_member_id_household_members_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "income_sources"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["household_id"],
+			"schemaTo": "public",
+			"tableTo": "households",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "CASCADE",
+			"name": "household_members_household_id_households_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"nameExplicit": false,
+			"columns": ["auth_user_id"],
+			"schemaTo": "public",
+			"tableTo": "user",
+			"columnsTo": ["id"],
+			"onUpdate": "NO ACTION",
+			"onDelete": "SET NULL",
+			"name": "household_members_auth_user_id_user_id_fkey",
+			"entityType": "fks",
+			"schema": "public",
+			"table": "household_members"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "assets_pkey",
+			"schema": "public",
+			"table": "assets",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "account_pkey",
+			"schema": "public",
+			"table": "account",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "invitation_pkey",
+			"schema": "public",
+			"table": "invitation",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "member_pkey",
+			"schema": "public",
+			"table": "member",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "organization_pkey",
+			"schema": "public",
+			"table": "organization",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "session_pkey",
+			"schema": "public",
+			"table": "session",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "user_pkey",
+			"schema": "public",
+			"table": "user",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "verification_pkey",
+			"schema": "public",
+			"table": "verification",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "calculations_pkey",
+			"schema": "public",
+			"table": "calculations",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "debt_payments_pkey",
+			"schema": "public",
+			"table": "debt_payments",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "debts_pkey",
+			"schema": "public",
+			"table": "debts",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "expenses_pkey",
+			"schema": "public",
+			"table": "expenses",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "households_pkey",
+			"schema": "public",
+			"table": "households",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "income_sources_pkey",
+			"schema": "public",
+			"table": "income_sources",
+			"entityType": "pks"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "household_members_pkey",
+			"schema": "public",
+			"table": "household_members",
+			"entityType": "pks"
+		}
+	],
+	"renames": []
+}

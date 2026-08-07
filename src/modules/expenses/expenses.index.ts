@@ -1,7 +1,5 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-
+import { createRouter } from "@/lib/create-app";
 import { householdAccessMiddleware } from "@/middleware/household-access.middleware";
-import type { AppBindings } from "@/types/app";
 
 import {
 	createExpenseHandler,
@@ -18,7 +16,7 @@ import {
 	updateExpenseRoute,
 } from "./expenses.routes";
 
-const expensesRouter = new OpenAPIHono<AppBindings>();
+const expensesRouter = createRouter();
 
 expensesRouter.use("*", householdAccessMiddleware);
 

@@ -1,0 +1,15 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"rootDir": ".tmp/sdk",
+		"outDir": ".tmp/npm-package/dist",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"verbatimModuleSyntax": true
+	},
+	"include": [".tmp/sdk/**/*.ts"]
+}

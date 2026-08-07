@@ -1,6 +1,8 @@
 // src/modules/affordability/affordability.schemas.ts
 import { z } from "@hono/zod-openapi";
 
+export { errorResponseSchema as affordabilityErrorResponseSchema } from "@/shared/schemas/common.schema";
+
 const nonNegativeMoneySchema = z
 	.string()
 	.trim()
@@ -105,22 +107,6 @@ export const affordabilityResponseSchema = z
 		calculatedAt: z.string().datetime(),
 	})
 	.openapi("AffordabilityAssessment");
-
-export const affordabilityErrorResponseSchema = z.object({
-	error: z.object({
-		code: z.string(),
-		message: z.string(),
-		requestId: z.string(),
-		details: z
-			.array(
-				z.object({
-					field: z.string().optional(),
-					message: z.string(),
-				}),
-			)
-			.optional(),
-	}),
-});
 
 export type CalculateAffordabilityInput = z.infer<
 	typeof calculateAffordabilityBodySchema

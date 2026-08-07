@@ -34,6 +34,7 @@ const exampleHousehold = {
 	name: "Jones Household",
 	currency: "GBP" as const,
 	country: "GB" as const,
+	nation: null,
 	postcodeArea: "SP4",
 	role: "owner",
 	createdAt: "2026-07-30T16:00:00.000Z",
@@ -124,7 +125,18 @@ describe("household routes", () => {
 	});
 
 	it("lists accessible households", async () => {
-		mockedList.mockResolvedValue([exampleHousehold]);
+		const listResponse = {
+			data: [exampleHousehold],
+			pagination: {
+				page: 1,
+				pageSize: 20,
+				totalItems: 1,
+				totalPages: 1,
+				hasPreviousPage: false,
+				hasNextPage: false,
+			},
+		};
+		mockedList.mockResolvedValue(listResponse);
 
 		const app = createAuthenticatedTestApp();
 
@@ -134,9 +146,12 @@ describe("household routes", () => {
 
 		const body = await response.json();
 
-		expect(body).toEqual([exampleHousehold]);
+		expect(body).toEqual(listResponse);
 
-		expect(mockedList).toHaveBeenCalledWith("user_123");
+		expect(mockedList).toHaveBeenCalledWith({
+			userId: "user_123",
+			query: { page: 1, pageSize: 20 },
+		});
 	});
 
 	it("returns a household", async () => {

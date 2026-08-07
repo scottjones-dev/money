@@ -1,6 +1,6 @@
 import { and, count, desc, eq, type SQL } from "drizzle-orm";
 
-import { type Debt, debts, householdMembers, type NewDebt } from "@/db/schema";
+import { type Debt, debts, type NewDebt } from "@/db/schema";
 import { db } from "@/lib/database";
 
 export interface DebtListFilters {
@@ -69,27 +69,15 @@ function createDebtConditions(
 }
 
 export const debtsRepository = {
-	async findMember(input: { householdId: string; memberId: string }) {
-		const [member] = await db
-			.select()
-			.from(householdMembers)
-			.where(
-				and(
-					eq(householdMembers.id, input.memberId),
-					eq(householdMembers.householdId, input.householdId),
-				),
-			)
-			.limit(1);
-
-		return member ?? null;
-	},
-
 	async findById(input: { householdId: string; debtId: string }) {
 		const [debt] = await db
 			.select()
 			.from(debts)
 			.where(
-				and(eq(debts.id, input.debtId), eq(debts.householdId, input.householdId)),
+				and(
+					eq(debts.id, input.debtId),
+					eq(debts.householdId, input.householdId),
+				),
 			)
 			.limit(1);
 
@@ -145,18 +133,27 @@ export const debtsRepository = {
 				updatedAt: new Date(),
 			})
 			.where(
-				and(eq(debts.id, input.debtId), eq(debts.householdId, input.householdId)),
+				and(
+					eq(debts.id, input.debtId),
+					eq(debts.householdId, input.householdId),
+				),
 			)
 			.returning();
 
 		return updated ?? null;
 	},
 
-	async delete(input: { householdId: string; debtId: string }): Promise<boolean> {
+	async delete(input: {
+		householdId: string;
+		debtId: string;
+	}): Promise<boolean> {
 		const deleted = await db
 			.delete(debts)
 			.where(
-				and(eq(debts.id, input.debtId), eq(debts.householdId, input.householdId)),
+				and(
+					eq(debts.id, input.debtId),
+					eq(debts.householdId, input.householdId),
+				),
 			)
 			.returning({
 				id: debts.id,

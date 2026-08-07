@@ -10,5 +10,9 @@ export const incomeTaxRules2025To2026EnglandWalesNorthernIreland = {
 	personalAllowanceTaperThreshold: "100000.00",
 	personalAllowanceTaperRate: "50",
 
-	bands: [],
+	bands: [
+		{ name: "basic", from: "0.00", to: "37700.00", rate: "20" },
+		{ name: "higher", from: "37700.00", to: "125140.00", rate: "40" },
+		{ name: "additional", from: "125140.00", to: null, rate: "45" },
+	],
 } satisfies IncomeTaxRuleSet;

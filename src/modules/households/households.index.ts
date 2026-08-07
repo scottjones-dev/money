@@ -5,11 +5,13 @@ import {
 	createHouseholdHandler,
 	getHouseholdHandler,
 	listHouseholdsHandler,
+	updateHouseholdHandler,
 } from "./households.handlers";
 import {
 	createHouseholdRoute,
 	getHouseholdRoute,
 	listHouseholdsRoute,
+	updateHouseholdRoute,
 } from "./households.routes";
 
 const router = createRouter();
@@ -21,5 +23,7 @@ router.openapi(createHouseholdRoute, createHouseholdHandler);
 router.openapi(listHouseholdsRoute, listHouseholdsHandler);
 
 router.openapi(getHouseholdRoute, getHouseholdHandler);
+
+router.openapi(updateHouseholdRoute, updateHouseholdHandler);
 
 export default router;

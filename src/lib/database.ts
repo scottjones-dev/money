@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
+import { relations } from "@/db/relations";
 import { env } from "@/env";
 
 export const pool = new Pool({
@@ -17,6 +18,7 @@ export const pool = new Pool({
 
 export const db = drizzle({
 	client: pool,
+	relations,
 });
 
 export type Database = typeof db;

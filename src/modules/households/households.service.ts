@@ -1,8 +1,14 @@
 import { auth } from "@/lib/auth";
+import {
+	createPaginationMeta,
+	getPaginationOffset,
+} from "@/shared/schemas/pagination.schema";
 import { householdsRepository } from "./households.repository";
 import type {
 	CreateHouseholdInput,
 	HouseholdResponse,
+	ListHouseholdsQuery,
+	UpdateHouseholdInput,
 } from "./households.schemas";
 
 function createOrganizationSlug(name: string): string {
@@ -25,6 +31,7 @@ function mapHouseholdResponse(input: {
 	currency: string;
 	country: string;
 	postcodeArea: string | null;
+	nation: "england" | "scotland" | "wales" | "northern_ireland" | null;
 	role: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -36,6 +43,7 @@ function mapHouseholdResponse(input: {
 		currency: "GBP",
 		country: "GB",
 		postcodeArea: input.postcodeArea,
+		nation: input.nation,
 		role: input.role,
 		createdAt: input.createdAt.toISOString(),
 		updatedAt: input.updatedAt.toISOString(),
@@ -66,6 +74,7 @@ export const householdsService = {
 				organizationId: organization.id,
 				name: input.data.name,
 				postcodeArea: input.data.postcodeArea,
+				nation: input.data.nation,
 			});
 
 			return mapHouseholdResponse({
@@ -94,10 +103,23 @@ export const householdsService = {
 		}
 	},
 
-	async list(userId: string): Promise<HouseholdResponse[]> {
-		const households = await householdsRepository.findAllForUser(userId);
+	async list(input: { userId: string; query: ListHouseholdsQuery }) {
+		const [households, totalItems] = await Promise.all([
+			householdsRepository.findAllForUser({
+				userId: input.userId,
+				limit: input.query.pageSize,
+				offset: getPaginationOffset(input.query),
+			}),
+			householdsRepository.countForUser(input.userId),
+		]);
 
-		return households.map(mapHouseholdResponse);
+		return {
+			data: households.map(mapHouseholdResponse),
+			pagination: createPaginationMeta({
+				...input.query,
+				totalItems,
+			}),
+		};
 	},
 
 	async get(input: {
@@ -111,5 +133,22 @@ export const householdsService = {
 		}
 
 		return mapHouseholdResponse(household);
+	},
+
+	async update(input: {
+		userId: string;
+		householdId: string;
+		data: UpdateHouseholdInput;
+	}): Promise<HouseholdResponse | null> {
+		const current = await householdsRepository.findForUser(input);
+		if (!current || (current.role !== "owner" && current.role !== "admin"))
+			return null;
+		const updated = await householdsRepository.update({
+			householdId: input.householdId,
+			values: input.data,
+		});
+		return updated
+			? mapHouseholdResponse({ ...updated, role: current.role })
+			: null;
 	},
 };

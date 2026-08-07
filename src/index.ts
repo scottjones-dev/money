@@ -3,8 +3,19 @@ import { serve } from "@hono/node-server";
 
 import app from "@/app";
 import { env } from "@/env";
+import { LOCAL_BASE_URL } from "@/lib/constants";
 import { pool } from "@/lib/database";
 import { logger } from "@/lib/logger";
+import { closeRedis, ensureRedisConnected } from "@/lib/redis";
+
+try {
+	await ensureRedisConnected();
+} catch (error) {
+	logger.warn(
+		{ error },
+		"Redis unavailable at startup; using insurance limits",
+	);
+}
 
 const server = serve(
 	{
@@ -12,17 +23,18 @@ const server = serve(
 		port: env.PORT,
 	},
 	(info) => {
+		const baseUrl = env.PUBLIC_BASE_URL ?? LOCAL_BASE_URL;
 		logger.info(
 			{
 				address: info.address,
 				port: info.port,
 			},
-			`UK Finance API running at https://api.alicesystems.co.uk`,
+			`UK Finance API running at ${baseUrl}`,
 		);
 
-		logger.info(`OpenAPI document: https://api.alicesystems.co.uk/doc`);
+		logger.info(`OpenAPI document: ${baseUrl}/doc`);
 
-		logger.info(`Scalar reference: https://api.alicesystems.co.uk/reference`);
+		logger.info(`Scalar reference: ${baseUrl}/reference`);
 	},
 );
 
@@ -37,8 +49,8 @@ async function shutdown(signal: string): Promise<void> {
 		}
 
 		try {
-			await pool.end();
-			logger.info("Database pool closed");
+			await Promise.all([pool.end(), closeRedis()]);
+			logger.info("Database and Redis connections closed");
 		} catch (error) {
 			logger.error({ error }, "Failed to close database pool");
 

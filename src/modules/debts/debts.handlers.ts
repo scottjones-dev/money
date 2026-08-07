@@ -1,6 +1,5 @@
-import { AppError } from "@/shared/errors/app-error";
-import { ERROR_CODES } from "@/shared/errors/error-codes";
-import type { AppRouteHandler, HouseholdContext } from "@/types/app";
+import { getRequiredHousehold } from "@/shared/http/required-household";
+import type { AppRouteHandler } from "@/types/app";
 
 import type {
 	createDebtRoute,
@@ -11,23 +10,9 @@ import type {
 } from "./debts.routes";
 import { debtsService } from "./debts.service";
 
-function getRequiredHousehold(
-	household: HouseholdContext | null,
-): HouseholdContext {
-	if (!household) {
-		throw new AppError({
-			code: ERROR_CODES.HOUSEHOLD_NOT_FOUND,
-			message: "The household could not be found.",
-			statusCode: 404,
-		});
-	}
-
-	return household;
-}
-
-export const createDebtHandler: AppRouteHandler<typeof createDebtRoute> = async (
-	context,
-) => {
+export const createDebtHandler: AppRouteHandler<
+	typeof createDebtRoute
+> = async (context) => {
 	const household = getRequiredHousehold(context.get("household"));
 
 	const values = context.req.valid("json");
@@ -71,9 +56,9 @@ export const getDebtHandler: AppRouteHandler<typeof getDebtRoute> = async (
 	return context.json(result, 200);
 };
 
-export const updateDebtHandler: AppRouteHandler<typeof updateDebtRoute> = async (
-	context,
-) => {
+export const updateDebtHandler: AppRouteHandler<
+	typeof updateDebtRoute
+> = async (context) => {
 	const household = getRequiredHousehold(context.get("household"));
 
 	const { debtId } = context.req.valid("param");
@@ -90,9 +75,9 @@ export const updateDebtHandler: AppRouteHandler<typeof updateDebtRoute> = async 
 	return context.json(result, 200);
 };
 
-export const deleteDebtHandler: AppRouteHandler<typeof deleteDebtRoute> = async (
-	context,
-) => {
+export const deleteDebtHandler: AppRouteHandler<
+	typeof deleteDebtRoute
+> = async (context) => {
 	const household = getRequiredHousehold(context.get("household"));
 
 	const { debtId } = context.req.valid("param");

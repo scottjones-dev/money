@@ -3,10 +3,10 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { defaultHook } from "stoker/openapi";
-
+import { env } from "@/env";
 import { logger } from "@/lib/logger";
+import { errorHandler } from "@/middleware/error.middleware";
 import { requestIdMiddleware } from "@/middleware/request-id.middleware";
-import { AppError } from "@/shared/errors/app-error";
 import type { AppBindings, AppOpenAPI } from "@/types/app";
 
 export function createRouter(): AppOpenAPI {
@@ -18,13 +18,24 @@ export function createRouter(): AppOpenAPI {
 
 export default function createApp(): AppOpenAPI {
 	const app = createRouter();
+	const allowedOrigins = new Set(
+		(
+			env.CORS_ALLOWED_ORIGINS ??
+			(env.NODE_ENV === "production"
+				? ""
+				: "http://localhost:3000,http://localhost:9000")
+		)
+			.split(",")
+			.map((origin) => origin.trim())
+			.filter(Boolean),
+	);
 
 	app.use("*", secureHeaders());
 
 	app.use(
 		"*",
 		cors({
-			origin: (origin) => origin,
+			origin: (origin) => (allowedOrigins.has(origin) ? origin : undefined),
 			allowHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
 			allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 			exposeHeaders: ["X-Request-ID"],
@@ -74,49 +85,7 @@ export default function createApp(): AppOpenAPI {
 		);
 	});
 
-	app.onError((error, context) => {
-		const requestId = context.get("requestId") ?? crypto.randomUUID();
-
-		if (error instanceof AppError) {
-			context.get("logger")?.warn(
-				{
-					code: error.code,
-					statusCode: error.statusCode,
-					details: error.details,
-				},
-				error.message,
-			);
-
-			return context.json(
-				{
-					error: {
-						code: error.code,
-						message: error.message,
-						requestId,
-					},
-				},
-				error.statusCode as 400 | 401 | 403 | 404 | 409 | 422,
-			);
-		}
-
-		context.get("logger")?.error(
-			{
-				error,
-			},
-			"Unhandled application error",
-		);
-
-		return context.json(
-			{
-				error: {
-					code: "INTERNAL_SERVER_ERROR",
-					message: "An unexpected error occurred.",
-					requestId,
-				},
-			},
-			500,
-		);
-	});
+	app.onError(errorHandler);
 
 	return app;
 }

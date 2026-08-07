@@ -127,15 +127,29 @@ describe("household member routes", () => {
 	});
 
 	it("lists household members", async () => {
-		mockedList.mockResolvedValue([exampleMember]);
+		const listResponse = {
+			data: [exampleMember],
+			pagination: {
+				page: 1,
+				pageSize: 20,
+				totalItems: 1,
+				totalPages: 1,
+				hasPreviousPage: false,
+				hasNextPage: false,
+			},
+		};
+		mockedList.mockResolvedValue(listResponse);
 
 		const app = createTestApp();
 
 		const response = await app.request(`/v1/households/${householdId}/members`);
 
 		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual([exampleMember]);
-		expect(mockedList).toHaveBeenCalledWith(householdId);
+		expect(await response.json()).toEqual(listResponse);
+		expect(mockedList).toHaveBeenCalledWith({
+			householdId,
+			query: { page: 1, pageSize: 20 },
+		});
 	});
 
 	it("returns one household member", async () => {

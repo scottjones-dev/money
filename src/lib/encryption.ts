@@ -1,170 +1,113 @@
-// src/lib/encryption.ts
 import {
 	createCipheriv,
 	createDecipheriv,
 	createHash,
 	randomBytes,
-	timingSafeEqual,
 } from "node:crypto";
 
 import { env } from "@/env";
 
 const ALGORITHM = "aes-256-gcm";
-const KEY_LENGTH_BYTES = 32;
-const IV_LENGTH_BYTES = 12;
-const AUTH_TAG_LENGTH_BYTES = 16;
-const ENCRYPTED_VALUE_VERSION = "v1";
+const IV_BYTES = 12;
+const TAG_BYTES = 16;
 
-function decodeEncryptionKey(value: string): Buffer {
-	const key = Buffer.from(value, "base64");
-
-	if (key.length !== KEY_LENGTH_BYTES) {
-		throw new Error("ENCRYPTION_KEY must be a Base64-encoded 32-byte key.");
-	}
-
-	return key;
+function developmentKey(): Buffer {
+	return createHash("sha256")
+		.update(`money-api:${env.BETTER_AUTH_SECRET}`)
+		.digest();
 }
 
-const encryptionKey = decodeEncryptionKey(env.ENCRYPTION_KEY);
-
-export interface EncryptedValue {
-	version: typeof ENCRYPTED_VALUE_VERSION;
-	iv: string;
-	authTag: string;
-	ciphertext: string;
+function keyring(): Map<string, Buffer> {
+	const keys = new Map<string, Buffer>();
+	if (!env.DATA_ENCRYPTION_KEYS) {
+		if (env.NODE_ENV === "production")
+			throw new Error("DATA_ENCRYPTION_KEYS is required in production.");
+		keys.set(env.DATA_ENCRYPTION_CURRENT_KEY_ID, developmentKey());
+		return keys;
+	}
+	for (const entry of env.DATA_ENCRYPTION_KEYS.split(",")) {
+		const separator = entry.indexOf(":");
+		if (separator < 1)
+			throw new Error("DATA_ENCRYPTION_KEYS entries must use keyId:base64Key.");
+		const id = entry.slice(0, separator).trim();
+		const key = Buffer.from(entry.slice(separator + 1).trim(), "base64");
+		if (key.length !== 32)
+			throw new Error(`Encryption key ${id} must decode to 32 bytes.`);
+		keys.set(id, key);
+	}
+	return keys;
 }
 
-function encodeEncryptedValue(value: EncryptedValue): string {
-	return [value.version, value.iv, value.authTag, value.ciphertext].join(".");
+export interface EncryptedPayload {
+	keyId: string;
+	value: string;
 }
 
-function decodeEncryptedValue(value: string): EncryptedValue {
-	const [version, iv, authTag, ciphertext, ...extra] = value.split(".");
-
-	if (
-		version !== ENCRYPTED_VALUE_VERSION ||
-		!iv ||
-		!authTag ||
-		!ciphertext ||
-		extra.length > 0
-	) {
-		throw new Error("Encrypted value has an invalid format.");
-	}
-
-	const ivBuffer = Buffer.from(iv, "base64url");
-	const authTagBuffer = Buffer.from(authTag, "base64url");
-
-	if (ivBuffer.length !== IV_LENGTH_BYTES) {
-		throw new Error("Encrypted value contains an invalid IV.");
-	}
-
-	if (authTagBuffer.length !== AUTH_TAG_LENGTH_BYTES) {
-		throw new Error("Encrypted value contains an invalid authentication tag.");
-	}
-
-	return {
-		version,
-		iv,
-		authTag,
-		ciphertext,
-	};
-}
-
-/**
- * Encrypts UTF-8 text using AES-256-GCM.
- *
- * The returned value contains:
- *
- * version.iv.authenticationTag.ciphertext
- */
-export function encryptString(plaintext: string): string {
-	const iv = randomBytes(IV_LENGTH_BYTES);
-
-	const cipher = createCipheriv(ALGORITHM, encryptionKey, iv, {
-		authTagLength: AUTH_TAG_LENGTH_BYTES,
+export function encryptString(plaintext: string): EncryptedPayload {
+	const keys = keyring();
+	const keyId = env.DATA_ENCRYPTION_CURRENT_KEY_ID;
+	const key = keys.get(keyId);
+	if (!key)
+		throw new Error(
+			`Current encryption key ${keyId} is not in DATA_ENCRYPTION_KEYS.`,
+		);
+	const iv = randomBytes(IV_BYTES);
+	const cipher = createCipheriv(ALGORITHM, key, iv, {
+		authTagLength: TAG_BYTES,
 	});
-
 	const ciphertext = Buffer.concat([
 		cipher.update(plaintext, "utf8"),
 		cipher.final(),
 	]);
+	return {
+		keyId,
+		value: [
+			"v1",
+			iv.toString("base64url"),
+			cipher.getAuthTag().toString("base64url"),
+			ciphertext.toString("base64url"),
+		].join("."),
+	};
+}
 
-	const authTag = cipher.getAuthTag();
-
-	return encodeEncryptedValue({
-		version: ENCRYPTED_VALUE_VERSION,
-		iv: iv.toString("base64url"),
-		authTag: authTag.toString("base64url"),
-		ciphertext: ciphertext.toString("base64url"),
+export function decryptString(payload: EncryptedPayload): string {
+	const key = keyring().get(payload.keyId);
+	if (!key) throw new Error(`Encryption key ${payload.keyId} is unavailable.`);
+	const [version, ivText, tagText, ciphertextText, ...extra] =
+		payload.value.split(".");
+	if (
+		version !== "v1" ||
+		!ivText ||
+		!tagText ||
+		!ciphertextText ||
+		extra.length
+	)
+		throw new Error("Encrypted payload has an invalid format.");
+	const iv = Buffer.from(ivText, "base64url");
+	const tag = Buffer.from(tagText, "base64url");
+	if (iv.length !== IV_BYTES || tag.length !== TAG_BYTES)
+		throw new Error("Encrypted payload metadata is invalid.");
+	const decipher = createDecipheriv(ALGORITHM, key, iv, {
+		authTagLength: TAG_BYTES,
 	});
-}
-
-/**
- * Decrypts a value produced by encryptString().
- *
- * Decryption fails if the encrypted value has been modified, the wrong key
- * is used, or its authentication tag is invalid.
- */
-export function decryptString(encryptedValue: string): string {
-	const decoded = decodeEncryptedValue(encryptedValue);
-
-	const decipher = createDecipheriv(
-		ALGORITHM,
-		encryptionKey,
-		Buffer.from(decoded.iv, "base64url"),
-		{
-			authTagLength: AUTH_TAG_LENGTH_BYTES,
-		},
-	);
-
-	decipher.setAuthTag(Buffer.from(decoded.authTag, "base64url"));
-
-	const plaintext = Buffer.concat([
-		decipher.update(Buffer.from(decoded.ciphertext, "base64url")),
+	decipher.setAuthTag(tag);
+	return Buffer.concat([
+		decipher.update(Buffer.from(ciphertextText, "base64url")),
 		decipher.final(),
-	]);
-
-	return plaintext.toString("utf8");
+	]).toString("utf8");
 }
 
-export function encryptJson<T>(value: T): string {
+export function encryptJson<T>(value: T): EncryptedPayload {
 	return encryptString(JSON.stringify(value));
 }
 
-export function decryptJson<T>(encryptedValue: string): T {
-	const plaintext = decryptString(encryptedValue);
-
-	try {
-		return JSON.parse(plaintext) as T;
-	} catch (error) {
-		throw new Error("Decrypted value does not contain valid JSON.", {
-			cause: error,
-		});
-	}
+export function decryptJson<T>(payload: EncryptedPayload): T {
+	return JSON.parse(decryptString(payload)) as T;
 }
 
-/**
- * Produces a deterministic SHA-256 digest for values that need exact-match
- * lookup while their original value remains encrypted.
- *
- * Do not use this for passwords. Better Auth handles password hashing.
- */
-export function createSearchHash(value: string): string {
-	return createHash("sha256")
-		.update(value.trim().toLowerCase(), "utf8")
-		.digest("hex");
-}
-
-/**
- * Compares two hexadecimal hashes without leaking comparison timing.
- */
-export function compareSearchHashes(left: string, right: string): boolean {
-	const leftBuffer = Buffer.from(left, "hex");
-	const rightBuffer = Buffer.from(right, "hex");
-
-	if (leftBuffer.length === 0 || leftBuffer.length !== rightBuffer.length) {
-		return false;
-	}
-
-	return timingSafeEqual(leftBuffer, rightBuffer);
+export function rotateEncryptedPayload(
+	payload: EncryptedPayload,
+): EncryptedPayload {
+	if (payload.keyId === env.DATA_ENCRYPTION_CURRENT_KEY_ID) return payload;
+	return encryptString(decryptString(payload));
 }

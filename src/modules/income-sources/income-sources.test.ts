@@ -23,9 +23,14 @@ vi.mock("@/modules/households/households.repository", () => ({
 	},
 }));
 
+vi.mock("@/modules/members/members.repository", () => ({
+	membersRepository: {
+		findById: mocks.findMember,
+	},
+}));
+
 vi.mock("@/modules/income-sources/income-sources.repository", () => ({
 	incomeSourcesRepository: {
-		findMember: mocks.findMember,
 		findById: mocks.findById,
 		list: mocks.list,
 		count: mocks.count,
@@ -93,6 +98,8 @@ const incomeSource: IncomeSource = {
 	startDate: "2026-01-01",
 	endDate: null,
 	notes: null,
+	sourceCalculationId: null,
+	sourceCalculationKey: null,
 	createdAt,
 	updatedAt,
 };
@@ -213,7 +220,7 @@ describe("income sources", () => {
 		const body = await response.json();
 
 		expect(body).toEqual({
-			items: [
+			data: [
 				{
 					id: incomeSourceId,
 					householdId,
@@ -236,11 +243,13 @@ describe("income sources", () => {
 					updatedAt: "2026-07-30T18:30:00.000Z",
 				},
 			],
-			meta: {
+			pagination: {
 				page: 1,
 				pageSize: 25,
-				total: 1,
+				totalItems: 1,
 				totalPages: 1,
+				hasPreviousPage: false,
+				hasNextPage: false,
 			},
 		});
 

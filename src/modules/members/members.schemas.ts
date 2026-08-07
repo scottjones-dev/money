@@ -1,5 +1,12 @@
 import { z } from "@hono/zod-openapi";
 
+export { errorResponseSchema } from "@/shared/schemas/common.schema";
+
+import {
+	createPaginatedResponseSchema,
+	paginationQuerySchema,
+} from "@/shared/schemas/pagination.schema";
+
 export const householdMemberTypeSchema = z.enum([
 	"adult",
 	"child",
@@ -179,9 +186,12 @@ export const householdMemberSchema = z
 	})
 	.openapi("HouseholdMember");
 
-export const householdMemberListSchema = z
-	.array(householdMemberSchema)
-	.openapi("HouseholdMemberList");
+export const listMembersQuerySchema = paginationQuerySchema;
+
+export const householdMemberListSchema = createPaginatedResponseSchema(
+	householdMemberSchema,
+	"HouseholdMemberList",
+);
 
 export const householdParamsSchema = z.object({
 	householdId: z.uuid(),
@@ -191,16 +201,6 @@ export const householdMemberParamsSchema = z.object({
 	householdId: z.uuid(),
 	memberId: z.uuid(),
 });
-
-export const errorResponseSchema = z
-	.object({
-		error: z.object({
-			code: z.string(),
-			message: z.string(),
-			requestId: z.string(),
-		}),
-	})
-	.openapi("MembersErrorResponse");
 
 export const deleteHouseholdMemberResponseSchema = z
 	.object({
@@ -218,3 +218,5 @@ export type UpdateHouseholdMemberInput = z.infer<
 >;
 
 export type HouseholdMemberResponse = z.infer<typeof householdMemberSchema>;
+
+export type ListMembersQuery = z.infer<typeof listMembersQuerySchema>;
