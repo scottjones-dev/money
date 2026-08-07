@@ -36,24 +36,54 @@ const server = serve(
 	},
 );
 
-async function shutdown(signal: string): Promise<void> {
-	logger.info({ signal }, "Shutting down API");
+const FORCE_EXIT_AFTER_MS = 10_000;
+let shutdownPromise: Promise<void> | undefined;
 
-	server.close(async (error) => {
-		if (error) {
-			logger.error({ error }, "Failed to close HTTP server");
-			process.exitCode = 1;
-			return;
-		}
+function shutdown(signal: string): Promise<void> {
+	shutdownPromise ??= (async () => {
+		logger.info({ signal }, "Shutting down API");
+
+		const forceExitTimer = setTimeout(() => {
+			logger.error("Forced shutdown after cleanup timed out");
+			process.exit(1);
+		}, FORCE_EXIT_AFTER_MS);
+		forceExitTimer.unref();
 
 		try {
-			await Promise.all([pool.end(), closeRedis()]);
-			logger.info("Database and Redis connections closed");
-		} catch (error) {
-			logger.error({ error }, "Failed to close database pool");
-			process.exitCode = 1;
+			await new Promise<void>((resolve) => {
+				server.close((error) => {
+					if (error) {
+						logger.error({ error }, "Failed to close HTTP server");
+						process.exitCode = 1;
+					}
+
+					resolve();
+				});
+
+				if (
+					"closeAllConnections" in server &&
+					typeof server.closeAllConnections === "function"
+				) {
+					server.closeAllConnections();
+				}
+			});
+
+			try {
+				await Promise.all([pool.end(), closeRedis()]);
+				logger.info("Database and Redis connections closed");
+			} catch (error) {
+				logger.error(
+					{ error },
+					"Failed to close database and Redis connections",
+				);
+				process.exitCode = 1;
+			}
+		} finally {
+			clearTimeout(forceExitTimer);
 		}
-	});
+	})();
+
+	return shutdownPromise;
 }
 
 process.once("SIGINT", () => {
